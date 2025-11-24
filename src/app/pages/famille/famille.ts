@@ -1,35 +1,39 @@
-// src/app/pages/famille/famille.component.ts
-
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Nécessaire pour [(ngModel)]
+import { FormsModule } from '@angular/forms'; 
 import { DashboardService } from '../../sevices/dashboard-service';
 import { FamilleSuperAdminDTO } from '../../interfaces/famille-super-admin-dto.interface';
-
-// Assurez-vous d'importer FamilleSuperAdminDTO depuis le bon fichier
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-famille',
   standalone: true,
-  imports: [CommonModule, DatePipe, FormsModule], // Ajout de FormsModule
+  imports: [CommonModule, DatePipe, FormsModule],
   templateUrl: './famille.html',
-  styleUrl: './famille.css'
+  styleUrls: ['./famille.css'] // Attention: c'est 'styleUrls' au pluriel
 })
-// 🛑 CORRECTION TS2305 : Le nom de la classe exportée est FamilleComponent
 export class Famille implements OnInit { 
+
+  // Injection des services via inject() (plus moderne) ou constructeur
+  private dashboardService = inject(DashboardService);
+  private authService = inject(Auth);
 
   familles: FamilleSuperAdminDTO[] = [];
   famillesFiltrees: FamilleSuperAdminDTO[] = [];
+  
   isLoading: boolean = true;
   errorMessage: string | null = null;
   adminName: string = "Super Admin";
 
+  // Variables de filtrage
   searchTerm: string = '';
   filterPeriod: string = 'all'; 
 
-  constructor(private dashboardService: DashboardService) {}
-
   ngOnInit(): void {
+    const name = this.authService.getUserFullName();
+    if (name) {
+        this.adminName = name;
+    }
     this.loadAllFamilles();
   }
 
@@ -41,61 +45,55 @@ export class Famille implements OnInit {
       next: (data) => {
         this.familles = data;
         this.isLoading = false;
+        // On applique les filtres dès le chargement pour remplir 'famillesFiltrees'
         this.applyFilters();
       },
       error: (err) => {
         this.errorMessage = err.message || "Erreur lors du chargement des familles.";
         this.isLoading = false;
-        console.error("Erreur de chargement des familles:", err);
+        console.error("Erreur:", err);
       }
     });
   }
 
   /**
-   * Applique les filtres de recherche et de période aux données.
+   * Cœur de la logique de recherche
    */
   applyFilters(): void {
-    let tempFamilles = [...this.familles];
-    const search = this.searchTerm.toLowerCase();
+    let temp = [...this.familles];
+    const search = this.searchTerm.toLowerCase().trim(); // .trim() enlève les espaces inutiles
 
-    // 1. Filtrage par Recherche (correction des erreurs TS18048)
+    // 1. Filtre Texte (Nom, Admin prénom, Admin nom)
     if (search) {
-      tempFamilles = tempFamilles.filter(famille => {
-        // L'opérateur de coalescence (?? '') est utilisé pour s'assurer que .toLowerCase() est appelé sur une chaîne.
-        return (famille.nom ?? '').toLowerCase().includes(search) ||
-               (famille.nomAdmin ?? '').toLowerCase().includes(search) ||
-               (famille.prenomAdmin ?? '').toLowerCase().includes(search);
-      });
+      temp = temp.filter(f => 
+        (f.nom ?? '').toLowerCase().includes(search) ||
+        (f.nomAdmin ?? '').toLowerCase().includes(search) ||
+        (f.prenomAdmin ?? '').toLowerCase().includes(search)
+      );
     }
     
-    // 2. Filtrage par Période (correction de l'erreur TS2769)
+    // 2. Filtre Période
     if (this.filterPeriod !== 'all') {
-      const today = new Date();
-      let cutOffDate = new Date();
+      const now = new Date();
+      let limitDate = new Date();
 
       if (this.filterPeriod === 'last_week') {
-        cutOffDate.setDate(today.getDate() - 7); 
+        limitDate.setDate(now.getDate() - 7); 
       } else if (this.filterPeriod === 'last_month') {
-        cutOffDate.setDate(today.getDate() - 30);
+        limitDate.setDate(now.getDate() - 30);
       }
 
-      tempFamilles = tempFamilles.filter(famille => {
-        // Correction TS2769: On s'assure que 'dateCreation' est une chaîne valide avant 'new Date()'.
-        // Si 'dateCreation' est null ou undefined (ce qui n'est pas censé arriver avec l'interface), 
-        // on peut utiliser une date arbitraire pour éviter le crash.
-        const creationDate = new Date(famille.dateCreation); 
-        return !isNaN(creationDate.getTime()) && creationDate >= cutOffDate;
+      temp = temp.filter(f => {
+        if (!f.dateCreation) return false;
+        const d = new Date(f.dateCreation);
+        return !isNaN(d.getTime()) && d >= limitDate;
       });
     }
 
-    this.famillesFiltrees = tempFamilles;
+    this.famillesFiltrees = temp;
   }
   
-  /**
-   * 🛑 CORRECTION TS2345 : Assure que le paramètre est traité comme un boolean
-   * en utilisant l'opérateur de coalescence nulle (?? false).
-   */
   getStatusLabel(isActive: boolean | null): string {
-      return (isActive ?? false) ? 'Actif' : 'Inactif';
+    return (isActive === true) ? 'Actif' : 'Inactif';
   }
 }

@@ -3,14 +3,31 @@
     <header class="dashboard-header-new">
         <div class="header-content-container">
             
-            <div class="search-bar new-search-bar">
-                <i class="material-icons">search</i>
-                <input type="text" placeholder="Recherche">
+            <!-- ⭐️ NOUVEAU : Wrapper pour aligner Recherche + Date -->
+            <div class="filters-wrapper">
+                
+                <!-- Barre de recherche -->
+                <div class="search-bar new-search-bar">
+                    <i class="material-icons">search</i>
+                    <input type="text" 
+                           placeholder="Rechercher..." 
+                           [(ngModel)]="searchTerm" 
+                           (input)="onSearch()">
+                </div>
+
+                <!-- ⭐️ NOUVEAU : Sélecteur de date -->
+                <div class="date-filter-container">
+                    <input type="date" 
+                           class="date-input" 
+                           [(ngModel)]="selectedDate" 
+                           (change)="onSearch()">
+                </div>
+
             </div>
             
             <div class="admin-profile-section">
                 <i class="material-icons profile-icon">person</i>
-                                <span class="admin-text">{{ adminName }}</span> 
+                <span class="admin-text">{{ adminName }}</span> 
             </div>
             
         </div>
@@ -18,107 +35,54 @@
         <h1>Dashboard</h1> 
     </header>
 
-        <div *ngIf="isLoading" class="loading-indicator">
-        <p>Chargement des données du tableau de bord...</p>
+    <div *ngIf="isLoading" class="loading-indicator">
+        <p>Chargement des données...</p>
     </div>
     <div *ngIf="errorMessage" class="error-indicator">
         <p>Erreur: {{ errorMessage }}</p>
         <button (click)="loadDashboardData()">Réessayer</button>
     </div>
 
-        <section class="metric-cards" *ngIf="dashboardData">
-        
-                <div class="card">
-            <div class="card-icon icon-familles">
-                <i class="material-icons">people_outline</i>
-            </div>
-            <div class="card-content">
-                <span class="count">{{ dashboardData.nombreFamilles | number }}</span>
-                <span class="label">Familles</span>
-            </div>
-        </div>
-
-                <div class="card">
-            <div class="card-icon icon-utilisateurs">
-                <i class="material-icons">group</i>
-            </div>
-            <div class="card-content">
-                <span class="count">{{ dashboardData.nombreUtilisateurs | number }}</span>
-                <span class="label">Utilisateurs</span>
-            </div>
-        </div>
-
-                <div class="card">
-            <div class="card-icon icon-contes">
-                <i class="material-icons">book</i>
-            </div>
-            <div class="card-content">
-                <span class="count">{{ dashboardData.nombreContes | number }}</span>
-                <span class="label">Contes</span>
-            </div>
-        </div>
-
-                <div class="card">
-            <div class="card-icon icon-photos">
-                <i class="material-icons">photo_library</i>
-            </div>
-            <div class="card-content">
-                <span class="count">{{ dashboardData.nombreArtisanats | number }}</span>
-                <span class="label">Artisanats</span>
-            </div>
-        </div>
-
-                <div class="card">
-            <div class="card-icon icon-chant">
-                <i class="material-icons">quiz</i>             </div>
-            <div class="card-content">
-                <span class="count">{{ dashboardData.nombreDevinettes | number }}</span>
-                <span class="label">Devinettes</span>
-            </div>
-        </div>
-
-                <div class="card">
-            <div class="card-icon icon-proverbes">
-                <i class="material-icons">format_quote</i>
-            </div>
-            <div class="card-content">
-                <span class="count">{{ dashboardData.nombreProverbes | number }}</span>
-                <span class="label">Proverbes</span>
-            </div>
-        </div>
-        
+    <!-- Section des cartes métriques (INCHANGÉE) -->
+    <section class="metric-cards" *ngIf="dashboardData">
+         <div class="card"><div class="card-icon icon-familles"><i class="material-icons">people_outline</i></div><div class="card-content"><span class="count">{{ dashboardData.nombreFamilles | number }}</span><span class="label">Familles</span></div></div>
+         <div class="card"><div class="card-icon icon-utilisateurs"><i class="material-icons">group</i></div><div class="card-content"><span class="count">{{ dashboardData.nombreUtilisateurs | number }}</span><span class="label">Utilisateurs</span></div></div>
+         <div class="card"><div class="card-icon icon-contes"><i class="material-icons">book</i></div><div class="card-content"><span class="count">{{ dashboardData.nombreContes | number }}</span><span class="label">Contes</span></div></div>
+         <div class="card"><div class="card-icon icon-photos"><i class="material-icons">photo_library</i></div><div class="card-content"><span class="count">{{ dashboardData.nombreArtisanats | number }}</span><span class="label">Artisanats</span></div></div>
+         <div class="card"><div class="card-icon icon-chant"><i class="material-icons">quiz</i></div><div class="card-content"><span class="count">{{ dashboardData.nombreDevinettes | number }}</span><span class="label">Devinettes</span></div></div>
+         <div class="card"><div class="card-icon icon-proverbes"><i class="material-icons">format_quote</i></div><div class="card-content"><span class="count">{{ dashboardData.nombreProverbes | number }}</span><span class="label">Proverbes</span></div></div>
     </section>
 
-        <section class="recent-activities" *ngIf="dashboardData">
-        
-                <div class="recent-column">
+    <section class="recent-activities" *ngIf="dashboardData">
+    
+        <div class="recent-column">
             <h2>Récents Récits (Contenus)</h2>
             
-                        <div class="story-card" *ngFor="let contenu of dashboardData.contenusRecents.slice(0, 5)">
+            <div class="story-card" *ngFor="let contenu of filteredContenus.slice(0, 5)">
                 <div class="activity-item">
-                                        <div class="item-icon" [ngClass]="getIconClass(contenu.typeContenu)">
+                    <div class="item-icon" [ngClass]="getIconClass(contenu.typeContenu)">
                         <i class="material-icons">{{ getMaterialIconName(contenu.typeContenu) }}</i>
                     </div>
                     <div class="item-details">
                         <span class="item-title">{{ contenu.titre }}</span>
                         <span class="item-subtitle">{{ contenu.prenomCreateur }} {{ contenu.nomCreateur }} ({{ contenu.typeContenu }})</span>
                     </div>
-                                        <span class="item-date">{{ contenu.dateCreation | date:'dd/MM/yyyy' }}</span> 
+                    <span class="item-date">{{ contenu.dateCreation | date:'dd/MM/yyyy' }}</span> 
                 </div>
             </div>
 
-            <div *ngIf="!dashboardData.contenusRecents || dashboardData.contenusRecents.length === 0">
-                <p class="text-muted">Aucun contenu récent à afficher.</p>
+            <div *ngIf="filteredContenus.length === 0">
+                <p class="text-muted">Aucun contenu trouvé pour ces critères.</p>
             </div>
         </div>
 
-                <div class="recent-column">
-            <h2>Récents Familles</h2>
+        <div class="recent-column">
+            <h2>Récentes Familles</h2>
             
             <div class="family-list-container">
                 <div class="activity-item family-item" 
                      [ngClass]="{'no-border': last}"
-                     *ngFor="let famille of dashboardData.famillesRecentes.slice(0, 5); let last = last">
+                     *ngFor="let famille of filteredFamilles.slice(0, 5); let last = last">
                     
                     <div class="item-details">
                         <span class="item-title">Famille {{ famille.nom }}</span>
@@ -126,13 +90,13 @@
                     </div>
                     <div class="family-meta">
                         <span class="family-members">{{ famille.nombreMembres || 0 }} membres</span>
-                                                <span class="item-date">{{ famille.dateCreation | date:'dd/MM/yyyy' }}</span>
+                        <span class="item-date">{{ famille.dateCreation | date:'dd/MM/yyyy' }}</span>
                     </div>
                 </div>
             </div>
 
-            <div *ngIf="!dashboardData.famillesRecentes || dashboardData.famillesRecentes.length === 0">
-                <p class="text-muted">Aucune famille récente à afficher.</p>
+            <div *ngIf="filteredFamilles.length === 0">
+                <p class="text-muted">Aucune famille trouvée pour ces critères.</p>
             </div>
 
         </div>

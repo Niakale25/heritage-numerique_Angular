@@ -1,87 +1,134 @@
 <div class="page-container">
-  <!-- Barre de recherche + profil admin -->
- <header class="header-chant">
-        <div class="header-content-container">
-            
-            <div class="search-bar">
-                <i class="material-icons">search</i>
-                <input type="text" placeholder="Recherche">
-            </div>
-            
-            <div class="admin-profile-section">
-                <i class="material-icons profile-icon">person</i>
-                <span class="admin-text">Admin</span>
-            </div>
-            
-        </div>
-    </header>
+  <header class="header-chant">
+    <div class="header-content-container">
+      <div class="search-bar">
+        <i class="material-icons">search</i>
+        <input type="text"
+               placeholder="Recherche par titre, description ou auteur..."
+               [(ngModel)]="searchTerm"
+               (ngModelChange)="applyFilters()" />
+      </div>
 
+      <div class="admin-profile-section">
+        <i class="material-icons profile-icon">person</i>
+                <span class="admin-text">{{ userFullName }}</span>
+      </div>
+    </div>
+  </header>
 
-  <!-- Titre -->
   <h1 class="page-title">Contenus artisanal</h1>
 
-  <!-- Filtres -->
   <section class="filters-card">
-    <select>
-      <option>Toutes les familles</option>
+    <select [(ngModel)]="selectedFamilleId" (ngModelChange)="applyFilters()">
+      <option [ngValue]="0">Toutes les familles</option>
+      <option *ngFor="let famille of familles" [ngValue]="famille.id">{{ famille.nom }}</option>
     </select>
-    <select>
-      <option>Tous les auteurs</option>
+
+    <select disabled>
+      <option>Tous les auteurs (à implémenter)</option>
     </select>
   </section>
 
-  <!-- Section Photos -->
   <section class="photos-section">
     <h2>{{ photos.length }} Photos</h2>
+
+    <div *ngIf="isLoading" class="loading-message">Chargement...</div>
+    <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
 
     <div class="photo-grid">
       <div class="photo-card" *ngFor="let item of photos" (click)="openModal(item)">
 
-        <img [src]="item.image" alt="photo" />
+        <img [src]="getPhotoUrl(item)" alt="Artisanat photo" />
+
+                <div class="card-action-buttons">
+          <button class="icon-btn edit-circle" (click)="startEdit(item, $event)" title="Modifier">
+            <span class="material-icons">edit</span>
+          </button>
+          <button class="icon-btn delete-circle" (click)="deleteFromCard(item.id, $event)" title="Supprimer">
+            <span class="material-icons">delete</span>
+          </button>
+        </div>
+
         <div class="photo-info">
-         
-          <p class="auteur">{{ item.auteur }}</p>
+          <p class="auteur">{{ item.nomCreateur }} {{ item.prenomCreateur }}</p>
           <div class="date">
             <span class="material-icons date-icon">calendar_month</span>
-            <span>{{ item.date }}</span>
+            <span>{{ item.dateCreation | date: 'dd/MM/yyyy' }}</span>
           </div>
         </div>
       </div>
+
+      <div *ngIf="!isLoading && !errorMessage && photos.length === 0" class="no-results">
+        Aucun contenu artisanal trouvé.
+      </div>
     </div>
   </section>
-<!-- MODALE -->
-<div class="modal-backdrop" *ngIf="selectedPhoto" (click)="closeModal()">
-  <div class="modal-card" (click)="$event.stopPropagation()">
 
-    <!-- Bouton fermer -->
-    <span class="material-icons close-icon" (click)="closeModal()">close</span>
+    <div class="modal-backdrop" *ngIf="selectedPhoto" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <span class="material-icons close-icon" (click)="closeModal()">close</span>
 
-    <!-- Titre -->
-    <h3 class="modal-title">{{ selectedPhoto.titre }}</h3>
+      <h3 class="modal-title">{{ selectedPhoto.titre }}</h3>
 
-    <!-- Tags -->
-    <div class="tags">
-      <div class="tag green">
-        <span class="material-icons">image</span>
-        <span>{{ selectedPhoto.categorie }}</span>
+      <div class="tags">
+        <div class="tag green">
+          <span class="material-icons">image</span>
+          <span>{{ selectedPhoto.nomCategorie }}</span>
+        </div>
+        <div class="tag gold">{{ selectedPhoto.regionFamille || selectedPhoto.region || 'N/A' }}</div>
       </div>
-      <div class="tag gold">{{ selectedPhoto.langue }}</div>
-    </div>
 
-    <!-- Image -->
-    <img [src]="selectedPhoto.image" alt="photo" class="modal-photo" />
+      <img [src]="getPhotoUrl(selectedPhoto)" alt="photo modale" class="modal-photo" />
 
-    <!-- Contenu -->
-    <p class="section-title">Contenu original</p>
-    <p class="description">{{ selectedPhoto.description }}</p>
+      <p class="section-title">Contenu original</p>
+      <p class="description">{{ selectedPhoto.description }}</p>
 
-    <!-- Auteur et date -->
-    <div class="footer-info">
-      <span>{{ selectedPhoto.auteur }}</span>
-      <span>{{ selectedPhoto.date }}</span>
+      <div class="action-buttons">
+        <button class="btn edit-btn" (click)="startEdit(selectedPhoto, $event)">
+          <span class="material-icons">edit</span> Modifier
+        </button>
+        <button class="btn delete-btn" (click)="deleteFromModal(selectedPhoto.id)">
+          <span class="material-icons">delete</span> Supprimer
+        </button>
+        </div>
+
+      <div class="footer-info">
+        <span>Auteur : {{ selectedPhoto.nomCreateur }} {{ selectedPhoto.prenomCreateur }}</span>
+        <span>Créé le : {{ selectedPhoto.dateCreation | date: 'dd/MM/yyyy' }}</span>
+      </div>
     </div>
   </div>
+
+   <div class="modal-backdrop" *ngIf="showEditModal" (click)="cancelEdit()">
+  <div class="modal-card form-card" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Modifier l'artisanat</h3>
+
+    <form (ngSubmit)="submitEdit()">
+      <label class="field-label">Titre</label>
+      <input type="text" [(ngModel)]="editModel.titre" name="titre" required />
+
+      <label class="field-label">Description</label>
+      <textarea rows="4" [(ngModel)]="editModel.description" name="description"></textarea>
+
+      <label class="field-label">Lieu</label>
+      <input type="text" [(ngModel)]="editModel.lieu" name="lieu" />
+
+      <label class="field-label">Région</label>
+      <input type="text" [(ngModel)]="editModel.region" name="region" />
+
+      <label class="field-label">Nouvelle photo (optionnel)</label>
+      <input type="file" (change)="onPhotoSelected($event)" accept="image/*" />
+
+      <label class="field-label">Nouvelle vidéo (optionnel)</label>
+      <input type="file" (change)="onVideoSelected($event)" accept="video/*" />
+
+      <div *ngIf="uploadProgress > 0">Upload: {{ uploadProgress }}%</div>
+
+      <div class="edit-form-actions">
+        <button type="submit" class="btn edit-btn">Enregistrer</button>
+        <button type="button" class="btn cancel-btn" (click)="cancelEdit()">Annuler</button>
+      </div>
+    </form>
+  </div>
 </div>
-
-
 </div>

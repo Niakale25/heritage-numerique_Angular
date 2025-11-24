@@ -1,180 +1,130 @@
-
-/* Le conteneur principal de la page à côté de la sidebar */
+/* ---------------------------------------------------- */
+/* STRUCTURE PRINCIPALE */
+/* ---------------------------------------------------- */
 .main-content-familles {
     flex-grow: 1;
     padding: 24px 30px; 
     display: flex;
     flex-direction: column;
+    background-color: #F8F9FA;
+    min-height: 100vh;
 }
-/* EN-TÊTE  */
-.header-familles {
-    width: 100%;
-    margin-bottom: 30px;
-}
+
+/* ---------------------------------------------------- */
+/* HEADER */
+/* ---------------------------------------------------- */
+.header-familles { width: 100%; margin-bottom: 30px; }
 .header-content-container {
-    width: 100%;
-    height: 83px; 
+    width: 100%; height: 83px; 
     background: rgba(239, 234, 234, 0.81);
     border-radius: 20px;  
-    display: flex;
-    align-items: center; 
-    justify-content: space-between; 
+    display: flex; align-items: center; justify-content: space-between; 
     padding: 0 25px; 
 }
 
-/* Barre de Recherche  */
+/* Barre de Recherche */
 .search-bar {
-    width: 375px; 
-    height: 44px;
-    display: flex;
-    align-items: center;  
+    width: 375px; height: 44px;
+    display: flex; align-items: center;  
     background: #FFFFFF;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 15px;
-    padding: 0 15px;
+    border-radius: 15px; padding: 0 15px;
 }
-
-.search-bar i {
-    font-size: 21px; 
-    color: rgba(0, 0, 0, 0.5); 
-    margin-right: 10px;
-}
+.search-bar i { font-size: 21px; color: rgba(0, 0, 0, 0.5); margin-right: 10px; }
 .search-bar input {
-    flex-grow: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 13px;
-    color: rgba(0, 0, 0, 0.5);
+    flex-grow: 1; border: none; outline: none; background: transparent;
+    font-size: 14px; color: #333;
 }
 
 /* Profil Admin */
-.admin-profile-section {
-    display: flex;
-    align-items: center;
-}
-
-.profile-icon {
-    font-size: 24px;
-    color: #333; 
-    margin-right: 10px;
-}
-
+.admin-profile-section { display: flex; align-items: center; }
+.profile-icon { font-size: 24px; color: #333; margin-right: 10px; }
 .admin-text {
-    /* Admin */
-    font-weight: 700;
-    font-size: 20px;
-    line-height: 36px;
-    color: var(--color-brown); /* #967B56 */
-    white-space: nowrap; 
+    font-family: 'Roboto', sans-serif; font-weight: 700;
+    font-size: 20px; color: #967B56; white-space: nowrap; 
 }
-/* TITRE DE LA PAGE (Familles) */
+
+/* ---------------------------------------------------- */
+/* CONTENU PAGE */
+/* ---------------------------------------------------- */
 .page-title-familles {
-    /* Basé sur Familles */
-    font-weight: 700;
-    font-size: 32px;
-    line-height: 36px;
-    color: #000000;
-    margin-bottom: 20px;
+    font-weight: 700; font-size: 32px; color: #000000; margin-bottom: 20px;
 }
-/* CONTENEUR PRINCIPAL DE LA LISTE (Rectangle 187) */
+
+/* Carte liste */
 .familles-list-card {
-    width: 100%;
-    background: #FFFFFF;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    padding: 20px 25px; 
+    width: 100%; background: #FFFFFF;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; padding: 25px; 
 }
 
-/* En-tête du conteneur pour le bouton de filtre */
+/* ---------------------------------------------------- */
+/* FILTRES (SELECT) */
+/* ---------------------------------------------------- */
 .card-header-familles {
-    display: flex;
-    justify-content: flex-end; /* Pousse le bouton à droite */
-    margin-bottom: 15px;
+    display: flex; justify-content: flex-end; margin-bottom: 20px;
 }
 
-/* BOUTON FILTRER PAR PÉRIODE (Basé sur Button) */
-.filter-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 10px;
-    width: 181px;
-    height: 32px;
-    
+/* Wrapper pour positionner l'icône sur le select */
+.select-wrapper { position: relative; width: 200px; }
+
+.filter-select {
+    width: 100%; height: 40px;
+    padding: 0 15px;
+    appearance: none; /* Enlève la flèche par défaut */
     background: #FFFFFF;
     border: 1px solid #E5E5E5;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
+    font-size: 14px; font-weight: 500; color: #333;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
+    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+    outline: none;
 }
 
-.filter-button i {
-    font-size: 18px;
-    color: #333;
+.select-icon {
+    position: absolute; right: 10px; top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; color: #666; font-size: 20px;
 }
 
-.filter-button .arrow-down {
-    margin-left: 5px;
-}
-
-/* ÉLÉMENTS DE LA LISTE DE FAMILLE  */
-
+/* ---------------------------------------------------- */
+/* LISTE DES ITEMS */
+/* ---------------------------------------------------- */
 .family-item-card {
-    width: 100%;
-    height: 64px;     
-    display: flex;
-    align-items: center;
-    justify-content: space-between;   
+    width: 100%; height: 75px;     
+    display: flex; align-items: center; justify-content: space-between;   
     background: #FFFFFF;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
-    border-radius: 5px;
-    margin-bottom: 10px; /* Espace entre les items */
-    padding: 0 30px; /* Espacement intérieur */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    margin-bottom: 15px; padding: 0 25px;
+    transition: transform 0.2s;
 }
+.family-item-card:hover { transform: translateY(-2px); }
 
-.item-details-famille {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
+/* Textes */
+.item-details-famille { display: flex; flex-direction: column; justify-content: center; }
+.item-title-famille { font-weight: 700; font-size: 16px; color: #000; margin-bottom: 4px; }
+.item-subtitle-famille { font-size: 13px; color: #555; }
+.email-text { color: #888; font-style: italic; }
 
-.item-title-famille {
-    /* Basé sur Famille Dolo (titre) */
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 1.2; 
-    color: #000000;
-}
-
-.item-subtitle-famille {
-    /* Basé sur Oumar Dolo (sous-titre) */
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 1.2;
-    color: #000000;
-}
-
+/* Meta données (droite) */
 .family-meta-famille {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end; /* Aligne les éléments à droite */
+    display: flex; flex-direction: column; align-items: flex-end;
 }
+.item-date-famille { font-size: 12px; color: #666; margin-bottom: 3px; }
+.family-members-famille { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 3px; }
 
-.item-date-famille {
-    /* Basé sur 10/10/2025 */
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 1.2;
-    color: #000000;
-    margin-bottom: 5px;
+/* Statut (Badge) */
+.family-status {
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+    text-transform: uppercase;
 }
+.status-active { background-color: #e8f5e9; color: #2e7d32; }
+.status-inactive { background-color: #ffebee; color: #c62828; }
 
-.family-members-famille {
-    /* Basé sur 7 membres */
-    font-size: 13px;
-    line-height: 1.2;
-    color: #000000;
+/* Message vide */
+.text-muted-famille {
+    text-align: center; color: #999; margin-top: 30px; font-style: italic;
 }

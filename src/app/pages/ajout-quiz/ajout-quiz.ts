@@ -1,37 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Conte, PropositionQuestionRequest, QuizContenuRequest, QuizService } from '../../quiz/quiz';
+import { FormsModule } from '@angular/forms'; // Important pour ngModel
+import { Router } from '@angular/router';
+import { QuizService, Conte, QuizContenuRequest } from '../../quiz/quiz'; 
+import { Auth } from '../../services/auth'; 
 
+// Interfaces locales pour le formulaire
 type TypeReponse = 'QCM' | 'VRAI_FAUX';
 
 interface LocalProposition {
-  texteProposition: string; // affichage/local
+  texteProposition: string;
   estCorrecte: boolean;
-  ordre?: number;
-  idQuestion?: number;
+  ordre: number;
 }
 
 interface LocalQuestion {
-  texteQuestion: string; // affichage/local
+  texteQuestion: string;
   typeReponse: TypeReponse;
   ordre: number;
   points: number;
   propositions: LocalProposition[];
-  reponseVraiFaux?: boolean;
 }
 
 @Component({
   selector: 'app-ajout-quiz',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  // CORRECTION ICI : Les noms correspondent à vos fichiers
   templateUrl: './ajout-quiz.html',
   styleUrls: ['./ajout-quiz.css']
 })
+// CORRECTION ICI : Nom de la classe "AjoutQuiz" pour correspondre à votre route
 export class AjoutQuiz implements OnInit {
+  
+  // Injection des services
+  private quizService = inject(QuizService);
+  private authService = inject(Auth);
+  private router = inject(Router);
+
+  // Données
   contes: Conte[] = [];
   selectedConteId: number | null = null;
+  adminFullName: string = 'Admin';
 
+  // Modèle du formulaire
   currentQuiz: {
     titre: string;
     description: string;
@@ -39,126 +51,127 @@ export class AjoutQuiz implements OnInit {
   } = {
     titre: '',
     description: '',
-    questions: [
-      {
-        texteQuestion: '',
-        typeReponse: 'QCM',
-        ordre: 1,
-        points: 1,
-        propositions: [
-          { texteProposition: '', estCorrecte: false, ordre: 1, idQuestion: 0 }
-        ],
-        reponseVraiFaux: false
-      }
-    ]
+    questions: []
   };
 
-  constructor(private quizService: QuizService) {}
-
   ngOnInit(): void {
-    this.loadContesPublics();
+    const name = this.authService.getUserFullName();
+    if (name) this.adminFullName = name;
+    this.loadContes();
+    this.addQuestion();
   }
 
-  loadContesPublics(): void {
+  loadContes() {
     this.quizService.getContesPublics().subscribe({
-      next: (data) => (this.contes = data),
-      error: (err) => console.error('Erreur chargement contes', err)
+      next: (data) => this.contes = data,
+      error: (err) => console.error(err)
     });
   }
 
-  addQuestion(): void {
-    this.currentQuiz.questions.push({
+  // --- GESTION DES QUESTIONS ---
+
+  addQuestion() {
+    const newQ: LocalQuestion = {
       texteQuestion: '',
       typeReponse: 'QCM',
       ordre: this.currentQuiz.questions.length + 1,
       points: 1,
-      propositions: [{ texteProposition: '', estCorrecte: false, ordre: 1, idQuestion: 0 }],
-      reponseVraiFaux: false
-    });
+      propositions: [
+        { texteProposition: '', estCorrecte: true, ordre: 1 },
+        { texteProposition: '', estCorrecte: false, ordre: 2 }
+      ]
+    };
+    this.currentQuiz.questions.push(newQ);
   }
 
-  removeQuestion(index: number): void {
+  removeQuestion(index: number) {
     this.currentQuiz.questions.splice(index, 1);
     this.currentQuiz.questions.forEach((q, i) => q.ordre = i + 1);
   }
 
-  addProposition(question: LocalQuestion): void {
-    const nextOrdre = (question.propositions.length || 0) + 1;
-    question.propositions.push({ texteProposition: '', estCorrecte: false, ordre: nextOrdre, idQuestion: 0 });
+  // --- LOGIQUE METIER (Toggle Types) ---
+
+  setQuestionType(type: TypeReponse, question: LocalQuestion) {
+    if (question.typeReponse === type) return;
+
+    question.typeReponse = type;
+
+    if (type === 'VRAI_FAUX') {
+      question.propositions = [
+        { texteProposition: 'Vrai', estCorrecte: true, ordre: 1 },
+        { texteProposition: 'Faux', estCorrecte: false, ordre: 2 }
+      ];
+    } else {
+      question.propositions = [
+        { texteProposition: '', estCorrecte: true, ordre: 1 },
+        { texteProposition: '', estCorrecte: false, ordre: 2 }
+      ];
+    }
   }
 
-  removeProposition(question: LocalQuestion, index: number): void {
+  // --- GESTION DES PROPOSITIONS ---
+
+  addProposition(question: LocalQuestion) {
+    question.propositions.push({
+      texteProposition: '',
+      estCorrecte: false,
+      ordre: question.propositions.length + 1
+    });
+  }
+
+  removeProposition(question: LocalQuestion, index: number) {
     question.propositions.splice(index, 1);
   }
 
-  setQuestionType(type: TypeReponse, question: LocalQuestion): void {
-    question.typeReponse = type === 'VRAI_FAUX' ? 'VRAI_FAUX' : 'QCM';
+  toggleCorrect(question: LocalQuestion, prop: LocalProposition) {
     if (question.typeReponse === 'VRAI_FAUX') {
-      question.propositions = [
-        { texteProposition: 'Vrai', estCorrecte: false, ordre: 1, idQuestion: 0 },
-        { texteProposition: 'Faux', estCorrecte: false, ordre: 2, idQuestion: 0 }
-      ];
-      question.reponseVraiFaux = false;
+      question.propositions.forEach(p => p.estCorrecte = false);
+      prop.estCorrecte = true;
     } else {
-      if (question.propositions.length === 2 && question.propositions[0].texteProposition === 'Vrai') {
-        question.propositions = [{ texteProposition: '', estCorrecte: false, ordre: 1, idQuestion: 0 }];
-      }
-      question.reponseVraiFaux = false;
+      question.propositions.forEach(p => p.estCorrecte = false); 
+      prop.estCorrecte = true; 
     }
   }
 
-  validateQuiz(): void {
+  // --- VALIDATION ---
+
+  validateQuiz() {
     if (!this.selectedConteId) {
-      alert(' Sélectionnez un conte avant de créer un quiz.');
+      alert("Veuillez choisir un conte.");
       return;
     }
+    if (!this.currentQuiz.titre) {
+        this.currentQuiz.titre = "Nouveau Quiz";
+    }
 
-    // Mapping local -> format attendu par le backend (QuizContenuRequest)
     const payload: QuizContenuRequest = {
       idContenu: this.selectedConteId,
       titre: this.currentQuiz.titre,
       description: this.currentQuiz.description,
       questions: this.currentQuiz.questions.map((q, i) => ({
-        question: q.texteQuestion,           // backend attend "question"
-        typeReponse: q.typeReponse,          // "QCM" ou "VRAI_FAUX"
+        question: q.texteQuestion,
+        typeReponse: q.typeReponse,
         ordre: i + 1,
         points: q.points,
+        reponseVraiFaux: false,
         propositions: q.propositions.map((p, j) => ({
-          texte: p.texteProposition,        // backend attend "texte"
+          texte: p.texteProposition,
           estCorrecte: p.estCorrecte,
-          ordre: j + 1,
-          idQuestion: 0
-        })),
-        reponseVraiFaux: !!q.reponseVraiFaux
+          ordre: j + 1
+        }))
       }))
     };
 
-    console.log(' Payload envoyé au backend:', payload);
+    console.log("Envoi au back:", payload);
 
     this.quizService.creerQuizPublic(payload).subscribe({
       next: (res) => {
-        alert(' Quiz créé avec succès !');
-        console.log(res);
-        // reset simple
-        this.currentQuiz = {
-          titre: '',
-          description: '',
-          questions: [
-            {
-              texteQuestion: '',
-              typeReponse: 'QCM',
-              ordre: 1,
-              points: 1,
-              propositions: [{ texteProposition: '', estCorrecte: false, ordre: 1, idQuestion: 0 }],
-              reponseVraiFaux: false
-            }
-          ]
-        };
-        this.selectedConteId = null;
+        console.log("Succès", res);
+        this.router.navigate(['/quiz']);
       },
       error: (err) => {
-        console.error(' Erreur création quiz', err);
-        alert('Erreur lors de la création du quiz. Voir console pour détails.');
+        console.error("Erreur", err);
+        alert("Erreur lors de la création");
       }
     });
   }

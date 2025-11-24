@@ -1,0 +1,184 @@
+:host {
+  /* Palette de couleurs modernes */
+  --primary: #AA7311;       /* Indigo */
+  --primary-hover: #AA7311;
+  --success: #49521D;       /* Vert emeraude */
+  --success-dark: #059669;
+  --danger: #ef4444;        /* Rouge */
+  --danger-soft: #fee2e2;
+  --danger-text: #b91c1c;
+  
+  --bg-card: #ffffff;
+  --text-main: #1f2937;
+  --text-sub: #6b7280;
+  --border: #e5e7eb;
+  
+  --shadow-sm: 0 3px 40px 0 rgba(0, 0, 0, 0.09);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-container {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 25px;
+  min-height: 100vh;
+  color: var(--text-main);
+}
+
+/* --- HEADER --- */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 25px;
+}
+.dashboard-header h1 { margin: 0; font-size: 1.8rem; color: var(--text-main); }
+.dashboard-header p { margin: 5px 0 0; color: var(--text-sub); }
+.stat-pill {
+  background: white; padding: 8px 16px; border-radius: 50px;
+  box-shadow: var(--shadow-sm); font-weight: 500; color: var(--text-sub);
+}
+.stat-val { color: var(--primary); font-weight: bold; font-size: 1.1em; }
+
+/* --- TOOLBAR --- */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  background: white;
+  padding: 4px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-group button {
+  border: none; background: transparent; padding: 8px 20px;
+  border-radius: 8px; cursor: pointer; color: var(--text-sub);
+  font-weight: 600; transition: all 0.2s;
+}
+.filter-group button.active {
+  background-color: var(--primary); color: white;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.9em; opacity: 0.5; }
+.search-wrapper input {
+  width: 100%; padding: 10px 10px 10px 35px; border: 1px solid var(--border);
+  border-radius: 10px; outline: none; transition: border-color 0.2s;
+}
+.search-wrapper input:focus { border-color: var(--primary); }
+
+/* --- TABLE (Desktop) --- */
+.modern-table {
+  width: 100%; background: white; border-radius: 12px;
+  border-collapse: collapse; overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.modern-table th {
+  text-align: left; padding: 16px 20px; background: #f9fafb;
+  font-size: 0.75rem; text-transform: uppercase; color: var(--text-sub); letter-spacing: 0.05em;
+}
+.modern-table td {
+  padding: 16px 20px; border-bottom: 1px solid #f3f4f6; vertical-align: middle;
+}
+.row-processed { background-color: #fafafa; }
+.row-processed td { opacity: 0.7; }
+
+.content-title { font-weight: 600; color: var(--text-main); cursor: pointer; }
+.content-title:hover { color: var(--primary); text-decoration: underline; }
+
+/* --- BADGES --- */
+.badge-type { padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.type-conte { background: #e0f2fe; color: #0369a1; }
+.type-proverbe { background: #dcfce7; color: #15803d; }
+.type-devinette { background: #fef3c7; color: #b45309; }
+.type-artisanat { background: #f3e8ff; color: #7e22ce; }
+.type-autre { background: #f3f4f6; color: #4b5563; }
+
+.badge-status { padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; }
+.statut-en-attente { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
+.statut-approuvee { background: #ecfdf5; color: #047857; border: 1px solid #d1fae5; }
+.statut-rejetee { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
+
+/* --- BOUTONS D'ACTION (Les Pillules Modernes) --- */
+.td-actions { min-width: 280px; text-align: right; }
+
+.actions-group {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+}
+
+.btn-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 50px; border: none;
+  font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.btn-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+
+/* Approuver : Vert Dégradé */
+.btn-approve {
+  background: linear-gradient(135deg, var(--success) 0%, var(--success-dark) 100%);
+  color: white;
+}
+/* Rejeter : Rouge Soft */
+.btn-reject {
+  background-color: var(--danger-soft); color: var(--danger-text);
+}
+.btn-reject:hover { background-color: #fecaca; }
+
+/* Lire : Simple icône */
+.btn-read {
+  background: transparent; color: var(--text-sub); box-shadow: none; padding: 8px;
+}
+.btn-read:hover { background: #f3f4f6; color: var(--primary); }
+
+/* Responsive : Cache le texte sur tablette, garde l'icône */
+@media (max-width: 1100px) {
+  .btn-pill .label { display: none; }
+  .btn-pill { padding: 8px; border-radius: 50%; width: 36px; height: 36px; justify-content: center; }
+}
+
+/* Texte de statut post-action */
+.processed-label { font-size: 0.9rem; font-weight: 600; }
+.text-success { color: var(--success-dark); }
+.text-danger { color: var(--danger-text); }
+
+/* --- MOBILE CARDS --- */
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only { display: none; }
+  .mobile-only { display: grid; gap: 15px; }
+  .toolbar { flex-direction: column; }
+  .search-wrapper { max-width: 100%; }
+  
+  .card {
+    background: white; padding: 20px; border-radius: 16px;
+    box-shadow: var(--shadow-sm); border: 1px solid var(--border);
+  }
+  .card-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 8px 0; font-size: 1.1rem; }
+  .card-meta { color: var(--text-sub); font-size: 0.85rem; margin-bottom: 20px; }
+  
+  .card-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  
+  .btn-mobile {
+    padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
+  }
+  .btn-mobile.view { background: var(--bg-page); color: var(--text-main); grid-column: span 2; }
+  .btn-mobile.approve { background: var(--success); color: white; }
+  .btn-mobile.reject { background: var(--danger-soft); color: var(--danger-text); }
+}

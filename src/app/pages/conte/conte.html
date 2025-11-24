@@ -1,5 +1,4 @@
 <main class="main-content-contes">
-  <!-- TOP BANNER -->
   <div class="top-banner">
     <div class="top-banner-inner">
       <div class="search-bar">
@@ -14,15 +13,13 @@
 
       <div class="admin-profile-section">
         <i class="material-icons profile-icon">person</i>
-        <span class="admin-text">Admin</span>
+                <span class="admin-text">{{ userFullName() }}</span>
       </div>
     </div>
   </div>
 
-  <!-- PAGE TITLE -->
   <h1 class="page-title-contes">Les Contes Malien</h1>
 
-  <!-- MAIN CARD -->
   <div class="contes-list-card">
     <div class="card-header-contes">
       <h2 class="section-title-contes">Contes ({{ filteredContes().length }})</h2>
@@ -54,7 +51,6 @@
       </div>
     </div>
 
-    <!-- ÉTAT DE CHARGEMENT / ERREUR -->
     <div *ngIf="isLoading()" class="loading-message">
       <div class="spinner"></div> Chargement des contes...
     </div>
@@ -63,10 +59,8 @@
       <i class="material-icons">error</i> {{ error() }}
     </div>
 
-    <!-- LISTE DES CONTES -->
     <div *ngIf="!isLoading() && !error()" class="contes-list">
       <div *ngFor="let conte of filteredContes()" class="conte-item-card">
-        <!-- ZONE GAUCHE -->
         <div class="conte-link-area" (click)="viewConteDetails(conte.id)">
           <div class="conte-thumbnail">
             <img [src]="getThumbnailUrl(conte.urlPhoto || conte.thumbnailUrl)" alt="Miniature du Conte" />
@@ -75,17 +69,15 @@
           <div class="conte-info">
             <span class="item-title-conte">{{ conte.titre }}</span>
 
-            <!--  Affichage : Prénom Nom Auteur • Nom Famille -->
             <span class="item-subtitle-conte">
               {{ conte.nomCreateur }}
-               {{ conte.prenomCreateur }}
+              {{ conte.prenomCreateur }}
             <span class="dot">•</span>
-             Famille {{ conte.nomFamille }}
+              Famille {{ conte.nomFamille }}
             </span>
           </div>
         </div>
 
-        <!-- PARTIE DROITE -->
         <div class="conte-right">
           <span class="item-date-conte">{{ formatCreationDate(conte.dateCreation) }}</span>
 
@@ -93,7 +85,8 @@
             <i class="material-icons action-icon edit-icon"
                (click)="modifierConte(conte); $event.stopPropagation()">edit</i>
             <i class="material-icons action-icon delete-icon"
-               (click)="supprimerConteLocally(conte); $event.stopPropagation()">delete</i>
+               (click)="supprimerConte(conte); $event.stopPropagation()">delete</i>
+
           </div>
         </div>
       </div>

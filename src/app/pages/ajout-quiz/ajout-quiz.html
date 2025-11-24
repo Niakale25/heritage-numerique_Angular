@@ -1,84 +1,119 @@
-<div class="ajout-quiz-container">
-  <h2 class="page-title">Création d’un nouveau Quiz</h2>
+<main class="main-content-quiz">
+  
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <!-- Sélection du conte -->
-  <div class="form-section">
-    <label for="conte-select" class="form-label">Associer le quiz à un conte :</label>
-    <div class="custom-select-container">
-      <select id="conte-select" class="conte-select-input" [(ngModel)]="selectedConteId" name="conteSelect">
-        <option [ngValue]="null" disabled>-- Sélectionnez un conte --</option>
-        <option *ngFor="let conte of contes" [ngValue]="conte.id">{{ conte.titre }}</option>
-      </select>
-      <i class="material-icons select-arrow">keyboard_arrow_down</i>
+  
+  <h1 class="page-title-center">Ajouter un nouveau quiz</h1>
+
+  <div class="form-card">
+    
+    <!-- SÉLECTION CONTE -->
+    <div class="section-group">
+      <label class="section-label">Contes</label>
+      <div class="custom-select-wrapper">
+        <select class="input-rounded" [(ngModel)]="selectedConteId">
+          <option [ngValue]="null" disabled selected>-- Choisir un conte --</option>
+          <option *ngFor="let c of contes" [ngValue]="c.id">{{ c.titre }}</option>
+        </select>
+      </div>
     </div>
-  </div>
 
-  <!-- Infos générales -->
-  <div class="form-section">
-    <label class="form-label">Titre du quiz :</label>
-    <input type="text" [(ngModel)]="currentQuiz.titre" name="titre" placeholder="Entrez le titre du quiz" class="form-input">
+    <!-- TITRE QUIZ -->
+    <div class="section-group">
+      <label class="section-label">Titre du Quiz</label>
+      <input type="text" class="input-rounded" [(ngModel)]="currentQuiz.titre" placeholder="Ex: Quiz sur le Lion">
+    </div>
 
-    <label class="form-label">Description :</label>
-    <textarea [(ngModel)]="currentQuiz.description" name="description" placeholder="Description du quiz..." class="form-textarea"></textarea>
-  </div>
-
-  <hr>
-
-  <!-- Section questions -->
-  <div class="questions-section">
-    <h3>Questions du quiz</h3>
-
+    <!-- BOUCLE DES QUESTIONS -->
     <div *ngFor="let question of currentQuiz.questions; let i = index" class="question-block">
-      <h4>Question {{ i + 1 }}</h4>
-
-      <label>Texte de la question :</label>
-      <input type="text" [(ngModel)]="question.texteQuestion" name="texteQuestion-{{i}}" placeholder="Ex: Que fait le lion ?" class="form-input">
-
-      <label>Type de question :</label>
-      <select [(ngModel)]="question.typeReponse" (change)="setQuestionType(question.typeReponse, question)" name="typeQuestion-{{i}}" class="form-input">
-        <option value="QCM">QCM</option>
-        <option value="VRAI_FAUX">Vrai / Faux</option>
-      </select>
-
-      <label>Nombre de points :</label>
-      <input type="number" [(ngModel)]="question.points" name="points-{{i}}" min="1" class="form-input-small">
-
-      <!-- Propositions -->
-      <div class="propositions-section">
-        <h5>Propositions :</h5>
-
-        <div *ngFor="let prop of question.propositions; let j = index" class="proposition-item">
-          <input
-            type="text"
-            [(ngModel)]="prop.texteProposition"
-            name="prop-{{i}}-{{j}}"
-            [readonly]="question.typeReponse === 'VRAI_FAUX'"
-            placeholder="Texte de la proposition"
-            class="form-input-inline"
-          >
-          <label class="checkbox-label">
-            <input type="checkbox" [(ngModel)]="prop.estCorrecte" name="propCorrect-{{i}}-{{j}}"> Bonne réponse
-          </label>
-          <button type="button" class="btn-remove" (click)="removeProposition(question, j)" *ngIf="question.typeReponse === 'QCM'">❌</button>
+      
+      <div class="question-header">
+        <!-- NOUVEAU : Conteneur gauche pour Titre + Points -->
+        <div class="header-left">
+            <label class="section-label" style="margin-bottom: 0;">Questions {{ i + 1 }}</label>
+            
+            <!-- Petit encart pour les points -->
+            <div class="points-badge">
+                <span class="points-label">Points :</span>
+                <input type="number" class="input-rounded input-small" [(ngModel)]="question.points" min="1">
+            </div>
         </div>
 
-        <!-- Bouton ajout proposition -->
-        <button type="button" class="btn-add" (click)="addProposition(question)" *ngIf="question.typeReponse === 'QCM'">
-           Ajouter une proposition
+        <button *ngIf="currentQuiz.questions.length > 1" class="btn-trash" style="border:none" (click)="removeQuestion(i)">
+          <i class="material-icons">close</i>
         </button>
       </div>
 
-      <!-- Supprimer question -->
-      <button type="button" class="btn-remove-question" (click)="removeQuestion(i)"> Supprimer cette question</button>
+      <input type="text" 
+             class="input-rounded" 
+             style="font-style: italic;" 
+             [(ngModel)]="question.texteQuestion" 
+             placeholder="Ex: L'histoire du lion et du chasseur?">
 
-      <hr>
+      <!-- TOGGLE QCM vs VRAI/FAUX -->
+      <div class="toggle-container">
+        
+        <div class="toggle-option" 
+             [class.active]="question.typeReponse === 'QCM'"
+             (click)="setQuestionType('QCM', question)">
+          <span class="toggle-label">QCM</span>
+          <div class="toggle-circle"></div>
+        </div>
+
+        <div class="toggle-option" 
+             [class.active]="question.typeReponse === 'VRAI_FAUX'"
+             (click)="setQuestionType('VRAI_FAUX', question)">
+          <span class="toggle-label">Vrai/Faux</span>
+          <div class="toggle-circle"></div>
+        </div>
+
+      </div>
+
+      <!-- LISTE DES PROPOSITIONS -->
+      <div class="propositions-list">
+        
+        <div *ngFor="let prop of question.propositions; let j = index" class="proposition-row">
+          
+          <input type="text" 
+                 class="input-rounded prop-input" 
+                 [(ngModel)]="prop.texteProposition" 
+                 [readonly]="question.typeReponse === 'VRAI_FAUX'"
+                 [placeholder]="'Réponse ' + (j + 1)">
+
+          <div class="check-circle" 
+               [class.checked]="prop.estCorrecte"
+               (click)="toggleCorrect(question, prop)"
+               title="Marquer comme bonne réponse">
+          </div>
+
+          <button class="btn-trash" 
+                  *ngIf="question.typeReponse === 'QCM'"
+                  (click)="removeProposition(question, j)">
+            <i class="material-icons">delete_outline</i>
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- BOUTONS ACTIONS -->
+      <div class="actions-row">
+        <button class="btn-pill btn-gold" (click)="addQuestion()" *ngIf="i === currentQuiz.questions.length - 1">
+          Ajouter une question
+        </button>
+        
+        <button class="btn-pill btn-green" (click)="addProposition(question)" *ngIf="question.typeReponse === 'QCM'">
+          Ajouter une réponse
+        </button>
+      </div>
+
+    </div> 
+
+    <!-- VALIDATION FINALE -->
+    <div class="form-footer">
+      <button class="btn-validate-big" (click)="validateQuiz()">Valider</button>
     </div>
 
-    <button type="button" class="btn-add-question" (click)="addQuestion()"> Ajouter une question</button>
   </div>
 
-  <!-- Validation -->
-  <div class="submit-section">
-    <button class="btn-validate" (click)="validateQuiz()"> Valider le quiz</button>
-  </div>
-</div>
+</main>

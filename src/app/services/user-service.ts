@@ -1,31 +1,47 @@
-// src/app/services/user.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UtilisateurSuperAdminDTO } from '../interfaces/user'; // Assurez-vous d'importer le DTO correct
+// Assurez-vous d'importer les bons DTO/Interfaces si disponibles
+// import { UtilisateurSuperAdminDTO } from '../interfaces/user'; 
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8080/api/superadmin/dashboard/utilisateurs';
+  // Base URL pour les opérations utilisateur standard (basé sur ton Controller Java)
+  private baseUrl = 'http://localhost:8080/api/utilisateurs';
+  
+  // URL pour le dashboard superadmin
+  private adminUrl = 'http://localhost:8080/api/superadmin/dashboard/utilisateurs';
+
+  userID = localStorage.getItem("user_id");
 
   constructor(private http: HttpClient) { }
 
   /**
-   * Récupère tous les utilisateurs (sans pagination)
+   * Récupère le profil de l'utilisateur connecté
    */
-  getAllUsers(): Observable<UtilisateurSuperAdminDTO[]> {
-    return this.http.get<UtilisateurSuperAdminDTO[]>(this.apiUrl);
+  getProfil() {
+    return this.http.get(`${this.baseUrl}/${this.userID}`);
   }
 
   /**
-   * Active ou désactive un utilisateur
+   * Met à jour les infos de l'utilisateur (y compris le mot de passe)
+   * Appelle PUT /api/utilisateurs/{id}
    */
+  updateProfil(id: any, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`, data);
+  }
+
+  // --- Méthodes Super Admin ---
+
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(this.adminUrl);
+  }
+
   toggleUserActivation(userId: number, actif: boolean): Observable<void> {
-    const url = `${this.apiUrl}/${userId}/activation`;
+    const url = `${this.adminUrl}/${userId}/activation`;
     let params = new HttpParams().set('actif', actif.toString()); 
-    // PATCH /api/superadmin/dashboard/utilisateurs/{id}/activation?actif=...
     return this.http.patch<void>(url, null, { params });
   }
 }

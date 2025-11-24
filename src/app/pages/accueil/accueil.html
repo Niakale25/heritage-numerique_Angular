@@ -11,10 +11,10 @@
 
     <nav class="menu">
         <ul>
-           <li class="nav-item" routerLink="/accueil" routerLinkActive="selected">
-                    <span class="material-icons">dashboard</span>
-                    <span>Dashboard</span>
-                </li>
+           <li class="nav-item" routerLink="/accueil/dashboard" routerLinkActive="selected" [routerLinkActiveOptions]="{exact: true}">
+    <span class="material-icons">dashboard</span>
+    <span>Dashboard</span>
+</li>
             <li class="nav-item"  routerLink="famille" routerLinkActive="selected">
                 <span class="material-icons">people_alt</span>
                 <span>Familles</span>
@@ -61,12 +61,12 @@
         </button>
     </div>
 
-    <hr class="separator bottom-separator">
+   <hr class="separator bottom-separator">
 
-    <div class="logout">
-        <span class="material-icons">logout</span>
-        <span>Déconnexion</span>
-    </div>
+ <div class="logout" (click)="deconnexion()">
+ <span class="material-icons">logout</span>
+ <span>Déconnexion</span>
+ </div>
 
 </div>
 

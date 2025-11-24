@@ -18,6 +18,7 @@ import { Proverbe } from './pages/proverbe/proverbe';
 import { Devinette } from './pages/devinette/devinette';
 import { ProverbDetailsComponent } from './pages/proverb-details-component/proverb-details-component';
 import { adminGuard } from './guards/admin-guard';
+import { DemandePublicationComponent } from './pages/demande-publication/demande-publication';
 
 export const routes: Routes = [
  { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -44,6 +45,7 @@ export const routes: Routes = [
       { path: 'conte/:id', component: DetailConte }, 
       
       { path: 'photo', component: ContenusArtisanal },
+      { path: 'demande', component: DemandePublicationComponent },
 
       {
         path: 'quiz',

@@ -9,6 +9,7 @@
  * pour éviter les erreurs TS18048, sauf 'isActive' qui pourrait être null.
  */
 export interface FamilleSuperAdminDTO {
+    nomFamille: any;
     id: number;
     nom: string; // Non-nullable
     description: string;

@@ -3,9 +3,11 @@ import { ChangeDetectionStrategy, Component, OnInit, signal, WritableSignal } fr
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ContenuGlobalDto } from '../conte/contenu-global.dto';
 import { ContenuService } from '../../services/contenu-service';
+import { Auth } from '../../services/auth';
+
 @Component({
   selector: 'app-devinette',
-  // RETIRER Observable ici
+  standalone: true, // Ajoutez standalone: true si ce n'était pas le cas
   imports: [CommonModule, ReactiveFormsModule], 
   templateUrl: './devinette.html',
   styleUrl: './devinette.css',
@@ -16,13 +18,17 @@ export class Devinette implements OnInit {
   Riddles: WritableSignal<(ContenuGlobalDto & { isAnswerVisible?: boolean })[]> = signal([]);
   showModal = signal(false);
   addForm: FormGroup;
+  
+  // ⭐️ Signal pour le nom de l'utilisateur
+  userFullName: WritableSignal<string> = signal('Admin'); 
 
   constructor(
     private fb: FormBuilder,
-    private contenuService: ContenuService
+    private contenuService: ContenuService,
+    // ⭐️ INJECTION du service Auth
+    private authService: Auth 
   ) {
     this.addForm = this.fb.group({
-      // 'titre' et 'description' correspondent aux formControlName dans le HTML
       titre: ['', Validators.required],
       description: ['', Validators.required],
     });
@@ -30,6 +36,13 @@ export class Devinette implements OnInit {
 
   ngOnInit(): void {
     console.log('✅ DevinetteComponent initialisé');
+    
+    // ⭐️ LOGIQUE DE RÉCUPÉRATION DU NOM
+    const name = this.authService.getUserFullName();
+    if (name) {
+      this.userFullName.set(name);
+    }
+
     this.loadRiddles();
   }
 
@@ -56,21 +69,11 @@ export class Devinette implements OnInit {
 
     const formData = new FormData();
     
-    // MAPPING VERS SPRING (@RequestParam)
-    // Votre formulaire a 'titre' et 'description'
-    // Spring attend: 'titre', 'texteDevinette', 'reponseDevinette'
-    formData.append('titre', this.addForm.value.titre); // Titre de la devinette
-    
-    // On suppose que la 'Question' (titre) est aussi le 'texteDevinette'
+    // MAPPING VERS SPRING
+    formData.append('titre', this.addForm.value.titre);
     formData.append('texteDevinette', this.addForm.value.titre); 
-    
-    // La 'Réponse' (description) est 'reponseDevinette'
     formData.append('reponseDevinette', this.addForm.value.description); 
     
-    // Ajoutez les champs par défaut requis par votre backend s'ils existent et ne sont pas dans le formulaire
-    // formData.append('lieu', ''); 
-    // formData.append('region', ''); 
-
     // Utiliser la méthode corrigée addDevinette (qui prend FormData et retourne Observable)
     this.contenuService.addDevinette(formData as any).subscribe({
       next: (r: any) => {

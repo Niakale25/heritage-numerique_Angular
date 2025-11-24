@@ -1,0 +1,117 @@
+<div class="dashboard-container">
+  
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Tableau de Bord</h1>
+      <p>Gestion des demandes de publication</p>
+    </div>
+    <div class="header-stats">
+      <div class="stat-pill">
+        <span class="stat-val">{{ demandes.length }}</span> demandes
+      </div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="filter-group">
+      <button [class.active]="filtreStatut === 'TOUS'" (click)="filtreStatut = 'TOUS'">Tout</button>
+      <button [class.active]="filtreStatut === 'EN_ATTENTE'" (click)="filtreStatut = 'EN_ATTENTE'">En attente</button>
+      <button [class.active]="filtreStatut === 'TRAITEE'" (click)="filtreStatut = 'TRAITEE'">Historique</button>
+    </div>
+    
+    <div class="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Rechercher..." [(ngModel)]="rechercheTexte">
+    </div>
+  </div>
+
+  <div class="table-responsive desktop-only" *ngIf="!loading">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th>Contenu</th>
+          <th>Type</th>
+          <th>Auteur</th>
+          <th>Date</th>
+          <th>Statut</th>
+          <th class="th-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of demandesFiltrees" [class.row-processed]="d.statut !== 'EN_ATTENTE'">
+          
+          <td>
+            <div class="content-info">
+              <span class="content-title" (click)="ouvrirContenu(d)">{{ d.titreContenu }}</span>
+            </div>
+          </td>
+
+          <td><span class="badge-type type-{{ d.typeContenu | lowercase }}">{{ d.typeContenu }}</span></td>
+
+          <td><span class="author-name">{{ d.nomDemandeur }}</span></td>
+
+          <td>{{ d.dateDemande | date:'dd/MM/yyyy' }}</td>
+
+          <td>
+            <span class="badge-status" [ngClass]="getStatutClass(d.statut)">
+              {{ d.statut === 'EN_ATTENTE' ? 'En attente' : (d.statut === 'APPROUVEE' ? 'Validé' : 'Rejeté') }}
+            </span>
+          </td>
+
+          <td class="td-actions">
+            
+            <div class="actions-group" *ngIf="d.statut === 'EN_ATTENTE'">
+              
+              <button class="btn-pill btn-read" (click)="ouvrirContenu(d)" title="Lire le contenu">
+                👁️
+              </button>
+
+              <button class="btn-pill btn-reject" (click)="rejeterDemande(d)">
+                <span class="icon">✕</span>
+                <span class="label">Rejeter</span>
+              </button>
+
+              <button class="btn-pill btn-approve" (click)="approuverDemande(d)">
+                <span class="icon">✓</span>
+                <span class="label">Valider</span>
+              </button>
+            </div>
+
+            <div *ngIf="d.statut !== 'EN_ATTENTE'" class="processed-label">
+               <span *ngIf="d.statut === 'APPROUVEE'" class="text-success">Publié avec succès</span>
+               <span *ngIf="d.statut === 'REJETEE'" class="text-danger">Demande rejetée</span>
+            </div>
+
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mobile-cards mobile-only">
+    <div class="card" *ngFor="let d of demandesFiltrees" [class.card-processed]="d.statut !== 'EN_ATTENTE'">
+      <div class="card-header">
+        <span class="badge-type type-{{ d.typeContenu | lowercase }}">{{ d.typeContenu }}</span>
+        <span class="badge-status" [ngClass]="getStatutClass(d.statut)">
+           {{ d.statut === 'EN_ATTENTE' ? 'En attente' : d.statut }}
+        </span>
+      </div>
+      
+      <h3 (click)="ouvrirContenu(d)">{{ d.titreContenu }}</h3>
+      <p class="card-meta">Par {{ d.nomDemandeur }} • {{ d.dateDemande | date:'shortDate' }}</p>
+
+      <div class="card-actions">
+        <button class="btn-mobile view" (click)="ouvrirContenu(d)">Lire</button>
+        
+        <ng-container *ngIf="d.statut === 'EN_ATTENTE'">
+          <button class="btn-mobile reject" (click)="rejeterDemande(d)">Rejeter</button>
+          <button class="btn-mobile approve" (click)="approuverDemande(d)">Valider</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="demandesFiltrees.length === 0 && !loading" class="empty-state">
+    <p>Aucune demande trouvée pour ces critères.</p>
+  </div>
+</div>

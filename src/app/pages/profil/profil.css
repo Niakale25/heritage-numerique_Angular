@@ -2,89 +2,93 @@
 :host {
     display: block;
     width: 100%;
-    /* 1. Supprimer le padding-left qui causait le défilement horizontal */
-    /* padding-left: 360px; */ 
     box-sizing: border-box;
     font-family: 'Inter', sans-serif;
-    /* 2. Assurer que le conteneur principal est centré */
-    overflow-x: hidden; /* Empêcher le défilement horizontal dû aux positions absolues */
+    overflow-x: hidden;
 }
 
 .page-wrapper {
-    /* Largeur totale des cartes + espacement */
-    width: 900px; /* 207px (carte gauche) + 47px (gap) + 606px (carte droite) = 860px. Utiliser une valeur fixe pour contenir les éléments absolus. */
-    max-width: 100%;
-    /* 2. Centrage du contenu */
-    margin: 0 auto; 
-    position: relative;
-    /* Nous allons utiliser cette div comme référence pour le positionnement absolu */
-    padding-bottom: 50px; /* Espace pour les boutons en bas */
+    width: 100%;
+    max-width: 1000px; /* Largeur max confortable sur grand écran */
+    margin: 0 auto;
+    padding: 0 20px 50px 20px; /* Padding latéral pour mobile + bas pour scroll */
+    box-sizing: border-box;
 }
 
 /* --- En-tête --- */
 .profile-header {
-    /* Ajustements pour centrer le titre principal */
     display: flex;
     align-items: center;
-    position: relative; /* Changé de absolute à relative */
-    top: 0;
-    justify-content: center; /* Centrer le contenu horizontalement */
-    margin-top: 65px; /* Ajouter la marge pour l'espacement initial */
-    margin-bottom: 40px; /* Espacement avec le contenu des cartes */
-}
-
-.back-icon {
-    /* Suppression des styles de l'icône de retour */
-    display: none; 
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    text-align: center;
 }
 
 .header-title {
-    /* Profil Administrateur */
     font-weight: 700;
-    font-size: 32px;
-    line-height: 36px;
+    font-size: 28px; /* Légèrement réduit pour mobile */
+    line-height: 1.2;
     color: #000000;
     margin: 0;
 }
 
-/* --- Conteneurs principaux des cartes --- */
-.profile-content-container {
-    /* Suppression des positions absolues pour suivre le flux normal après l'en-tête centré */
-    display: flex;
-    gap: 47px; 
-    position: relative; /* Changé de absolute à relative */
-    top: 0;
-    left: 0; 
-    width: 860px; /* Définir la largeur pour le flexbox */
-    margin: 0 auto; /* Centrer le conteneur de cartes (860px) à l'intérieur du page-wrapper (900px) */
+@media (min-width: 768px) {
+    .header-title {
+        font-size: 32px;
+    }
 }
 
-/* --- Carte Utilisateur (Gauche - Rectangle 186) --- */
+/* --- Conteneur principal (Layout Flex) --- */
+.profile-content-container {
+    display: flex;
+    flex-direction: column; /* Par défaut : colonnes empilées (Mobile first) */
+    gap: 30px;
+    width: 100%;
+    align-items: center; /* Centrer les cartes sur mobile */
+}
+
+/* Sur écran large (> 900px), on passe en ligne */
+@media (min-width: 900px) {
+    .profile-content-container {
+        flex-direction: row;
+        align-items: flex-start; /* Aligner en haut */
+        justify-content: center;
+    }
+}
+
+/* --- Carte Utilisateur (Gauche) --- */
 .user-card {
-    /* Rectangle 186 */
-    width: 207px;
-    height: 642px;
+    width: 100%;
+    max-width: 350px; /* Limite la largeur sur mobile */
     background: #FFFFFF;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
     border-radius: 15px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 28px;
+    padding: 30px 20px;
     box-sizing: border-box;
-    /* Rendre ce conteneur non-absolu si possible, mais nous le gardons pour l'instant avec le flexbox parent */
+    height: auto; /* Hauteur automatique selon contenu */
+}
+
+@media (min-width: 900px) {
+    .user-card {
+        width: 250px; /* Largeur fixe sur desktop */
+        /* On peut remettre une hauteur min si désiré pour l'esthétique */
+        min-height: 500px; 
+    }
 }
 
 .user-icon-bg {
-    /* Simule l'icône dans un cercle (qlementine-icons:user-16) */
     width: 70px;
     height: 70px;
-    background: #967B56;
+    background: #AA7311;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
 }
 
 .user-icon {
@@ -93,56 +97,48 @@
 }
 
 .user-name {
-    /* Niakalé Diakité */
     font-weight: 700;
     font-size: 20px;
-    line-height: 36px;
     color: #000000;
     margin: 0;
     text-align: center;
 }
 
 .user-role {
-    /* Administrateur */
     font-weight: 700;
     font-size: 15px;
-    line-height: 36px;
-    color: #967B56;
-    margin: 0 0 30px 0;
+    color: #AA7311;
+    margin: 5px 0 25px 0;
 }
 
 .separator {
-    /* Line 27 */
-    width: 175px;
+    width: 80%; /* Relatif */
     height: 0;
     border-top: 1px solid rgba(0, 0, 0, 1);
     margin-bottom: 25px;
 }
 
 .member-since {
-    /* Membre depuis le 16/10/2025 */
     font-weight: 400;
     font-size: 11px;
-    line-height: 36px;
     color: #000000;
     margin: 0;
 }
 
-/* --- Carte de Détails (Droite - Rectangle 199) --- */
+/* --- Carte de Détails (Droite) --- */
 .details-card {
-    /* Rectangle 199 */
-    width: 606px;
-    height: 650px;
+    width: 100%; /* Prend toute la largeur dispo */
     background: #FFFFFF;
     box-shadow: 0px 0px 14px rgba(0, 0, 0, 0.25);
     border-radius: 15px;
-    padding: 34px 40px; /* Remplace les positions absolues */
+    padding: 30px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    height: auto; /* Hauteur automatique */
 }
 
-/* --- Sections (Information Personnelle et Sécurité) --- */
+/* --- Sections --- */
 .section-header {
     display: flex;
     align-items: center;
@@ -151,37 +147,42 @@
 
 .info-icon, .security-icon {
     font-size: 24px;
-    color: #967B56;
+    color: #AA7311;
     margin-right: 10px;
 }
 
 .section-title {
     font-weight: 700;
-    font-size: 20px;
-    line-height: 36px;
+    font-size: 18px;
     color: #000000;
     margin: 0;
 }
 
-.security-title {
-    font-size: 24px; /* Plus grand selon la maquette */
+@media (min-width: 768px) {
+    .section-title { font-size: 20px; }
 }
 
 .security-section-divider {
-    /* Line 28/29 - Séparateur entre sections */
-    width: 543px;
+    width: 100%;
     height: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.5);
-    margin: 25px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+    margin: 30px 0;
 }
-
 
 /* --- Formulaire --- */
 .form-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px 25px;
-    margin-bottom: 25px;
+    grid-template-columns: 1fr; /* 1 colonne sur mobile */
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+/* Sur tablette et desktop : 2 colonnes */
+@media (min-width: 600px) {
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px 30px;
+    }
 }
 
 .form-group {
@@ -191,92 +192,97 @@
 
 .form-group label {
     font-weight: 700;
-    font-size: 16px;
-    line-height: 36px;
+    font-size: 14px;
     color: #000000;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .input-field {
-    /* Rectangle 200, 201, 202, 203, 204, 205, 206 */
     width: 100%;
     height: 45px;
     background: #FFFFFF;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.15);
     border-radius: 10px;
-    border: none;
+    border: 1px solid transparent; /* Pour éviter le saut si focus */
     padding: 0 15px;
     box-sizing: border-box;
     font-size: 16px;
 }
 
-/* Champ Mot de passe (large) */
+.input-field:focus {
+    outline: none;
+    border-color: #AA7311;
+}
+
+/* Classes utilitaires pour la grille */
 .wide-group {
-    grid-column: span 2;
+    grid-column: 1 / -1; /* Prend toute la largeur disponible */
 }
 
 .password-input-wrapper {
     display: flex;
     align-items: center;
-    padding: 0; /* Réinitialiser padding de .input-field */
+    padding: 0;
 }
 
 .password-input-wrapper input {
     flex-grow: 1;
-    height: 45px;
+    height: 43px; /* Ajusté pour bordure */
     padding: 0 15px;
     border: none;
     background: transparent;
-    border-radius: 10px;
     outline: none;
 }
 
 .eye-icon {
-    /* mdi:eye-outline */
-    color: #000000;
+    color: #555;
     font-size: 24px;
     padding: 0 15px;
     cursor: pointer;
 }
 
-/* --- Boutons d'action --- */
+/* --- Boutons --- */
 .action-buttons {
     display: flex;
-    justify-content: flex-end; /* Alignés à droite */
-    margin-top: auto; /* Pousser les boutons vers le bas */
-    gap: 20px;
+    flex-wrap: wrap; /* Permet aux boutons de passer à la ligne si écran trop petit */
+    justify-content: flex-end;
+    margin-top: 30px;
+    gap: 15px;
 }
 
 .btn {
-    width: 173px;
-    height: 37px;
+    padding: 0 25px;
+    height: 40px; /* Un peu plus haut pour le tactile */
     border-radius: 10px;
     font-weight: 700;
     font-size: 14px;
-    line-height: 37px;
-    text-align: center;
     cursor: pointer;
-    transition: background-color 0.2s;
     border: none;
+    transition: all 0.2s;
+    min-width: 120px; /* Largeur mini */
 }
 
 .btn-cancel {
-    /* Rectangle 190 */
     background: #FFFFFF;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    color: #000000;
+    border: 1px solid #ddd;
+    color: #333;
 }
 
 .btn-save {
-    /* Rectangle 189 */
     background: #AA7311;
     color: #FFFFFF;
 }
 
-.btn-save:hover {
-    background: #967B56;
-}
+.btn-save:hover { background: #967B56; }
+.btn-cancel:hover { background: #f5f5f5; }
 
-.btn-cancel:hover {
-    background: #f0f0f0;
+/* Messages d'alerte */
+.alert-message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
 }
+.success { background-color: #d4edda; color: #155724; }
+.error { background-color: #f8d7da; color: #721c24; }

@@ -1,70 +1,69 @@
 <main class="main-content-quiz">
 
-  <!-- Liens vers les icônes -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=account_circle" />
+ <!-- Liens vers les icônes -->
+ <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-  <!-- Header -->
-  <header class="header-user">
-    <div class="header-content-container">
-      <div class="search-bar">
-        <i class="material-icons">search</i>
-        <input type="text" placeholder="Recherche">
-      </div>
-      <div class="admin-profil-section">
-        <span class="material-symbols-outlined">account_circle</span>
-        <span class="admin-text">Admin</span>
-      </div>
-    </div>
-  </header>
+ <!-- Header -->
+ <header class="header-user">
+ <div class="header-content-container">
+ <div class="search-bar">
+ <i class="material-icons">search</i>
+ <input type="text" placeholder="Recherche">
+ </div>
+ <div class="admin-profil-section">
+      <i class="material-icons profile-icon">person</i>
+ <!-- ⭐️ CORRECTION : Affichage dynamique du nom -->
+ <span class="admin-text">{{ adminFullName }}</span>
+ </div>
+ </div>
+ </header>
 
-  <!-- Titre + bouton -->
-  <div class="page-header-actions">
-    <h1 class="page-title-quiz">Quiz</h1>
-    <button routerLink="new" class="btn btn-add-quiz">Ajouter un quiz</button>
-  </div>
+ <!-- Titre + bouton -->
+ <div class="page-header-actions">
+ <h1 class="page-title-quiz">Quiz</h1>
+ <button routerLink="new" class="btn btn-add-quiz">Ajouter un quiz</button>
+ </div>
 
-  <!-- Liste -->
-  <div class="quiz-list-card">
+<!-- Liste -->
+ <div class="quiz-list-card">
 
-    <h2 class="list-title">Liste des quiz disponibles</h2>
+ <h2 class="list-title">Liste des quiz disponibles</h2>
 
-    <div class="quiz-list">
+ <div class="quiz-list">
 
-      <div class="quiz-item-card" *ngFor="let quiz of quizList">
-        <div class="item-icon-container">
-          <i class="material-icons icon-book">book</i>
-        </div>
+ <div class="quiz-item-card" *ngFor="let quiz of quizList">
+ <div class="item-icon-container">
+ <i class="material-icons icon-book">book</i>
+ 
+ </div>
+<div class="item-details-quiz">
+<span class="item-title-quiz">
+ {{ quiz.titre }}
+ </span>
+ <span class="item-subtitle-quiz">
+ {{ quiz.description || 'Aucune description' }}
+ </span>
+ </div>
 
-        <div class="item-details-quiz">
-          <span class="item-title-quiz">
-            {{ quiz.titre }}
-          </span>
-          <span class="item-subtitle-quiz">
-            {{ quiz.description || 'Aucune description' }}
-          </span>
-        </div>
+ <div class="quiz-meta-quiz">
+ <span class="item-date-quiz">
+{{ quiz.dateCreation | date:'dd/MM/yyyy' }}
+ </span>
+ <span class="quiz-questions-quiz">
+{{ quiz.nombreQuestions || 0 }} question(s)
+ </span>
+ <span *ngIf="quiz.conteTitre" class="quiz-conte-quiz">
+Conte : {{ quiz.conteTitre }}
+ </span>
+</div>
+ </div>
 
-        <div class="quiz-meta-quiz">
-          <span class="item-date-quiz">
-             {{ quiz.dateCreation | date:'dd/MM/yyyy' }}
-          </span>
-          <span class="quiz-questions-quiz">
-             {{ quiz.nombreQuestions || 0 }} question(s)
-          </span>
-          <span *ngIf="quiz.conteTitre" class="quiz-conte-quiz">
-             Conte : {{ quiz.conteTitre }}
-          </span>
-        </div>
-      </div>
+ <!-- Si aucun quiz -->
+ <div *ngIf="quizList.length === 0" class="no-quiz">
+ Aucun quiz trouvé.
+ </div>
 
-      <!-- Si aucun quiz -->
-      <div *ngIf="quizList.length === 0" class="no-quiz">
-        Aucun quiz trouvé.
-      </div>
-
-    </div>
-  </div>
+ </div>
+ </div>
 
 </main>

@@ -1,4 +1,23 @@
 <main class="main-content-user">
+     <header class="header-chant">
+    <div class="header-content-container">
+      
+      <div class="search-bar">
+        <i class="material-icons">search</i>
+        <input type="text" 
+               placeholder="Recherche par titre, description ou auteur..." 
+               [(ngModel)]="searchTerm" 
+               (ngModelChange)="applyFilters()">
+      </div>
+      
+      <div class="admin-profile-section">
+        <i class="material-icons profile-icon">person</i>
+        <!-- ⭐️ CORRECTION : Affichage dynamique du nom via le signal -->
+        <span class="admin-text">{{ adminFullName() }}</span>
+      </div>
+      
+    </div>
+  </header>
 <h1 class="page-title-users">Utilisateurs</h1>
 
 <div class="pagination-header" style="visibility: hidden; height: 0;">
@@ -26,7 +45,8 @@
             <div class="loading-message">Chargement des utilisateurs...</div>
         }
         
-                @for (user of users(); track user.id) {
+               @for (user of filteredUsers(); track user.id) {
+
             <div class="user-row">
                 <div class="user-details col-utilisateur">
                     <div class="user-avatar">

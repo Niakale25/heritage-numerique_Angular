@@ -28,7 +28,7 @@ body {
 }
 
 /* ---------------------------------------------------- */
-/* NOUVEL HEADER ADAPTÉ (Rectangle 172 + Profil Admin) */
+/* HEADER */
 /* ---------------------------------------------------- */
 
 .dashboard-header-new {
@@ -36,24 +36,18 @@ body {
     flex-direction: column;
 }
 
-/* Conteneur du bandeau gris arrondi (Rectangle 172) */
 .header-content-container {
     width: 100%;
     height: 83px; 
     margin-bottom: 20px;
-    
-    /* Styles du bandeau */
     background: rgba(244, 244, 244, 0.81);
     border-radius: 20px;
-    
-    /* Disposition interne */
     display: flex;
     align-items: center; 
     justify-content: space-between; 
     padding: 0 25px; 
 }
 
-/* Ajustement du titre h1 pour qu'il soit sous le bandeau */
 .dashboard-header-new h1 {
     font-size: 32px;
     font-weight: 600;
@@ -62,22 +56,24 @@ body {
 }
 
 /* ---------------------------------------------------- */
-/* Barre de Recherche (Ajustée pour le nouveau bandeau) */
+/* ⭐️ FILTRES (Recherche + Date) */
 /* ---------------------------------------------------- */
 
-/* La classe .search-bar est réutilisée avec un style spécifique pour le nouvel en-tête */
+.filters-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espace entre la recherche et la date */
+}
+
+/* SEARCH BAR */
 .search-bar {
     display: flex;
     align-items: center;
 }
 
 .search-bar.new-search-bar {
-    /* Dimensions spécifiques au design */
-    width: 375px; 
-    max-width: none;
+    width: 300px; /* Légèrement réduit pour laisser place à la date */
     height: 44px;
-    
-    /* Styles spécifiques */
     background: #FFFFFF;
     border: 1px solid #EEEEEE;
     border-radius: 8px;
@@ -85,35 +81,36 @@ body {
     box-shadow: none; 
 }
 
-/* Styles communs à toutes les barres de recherche */
-.search-bar i {
-    color: #999;
-    margin-right: 10px;
+.search-bar i { color: #999; margin-right: 10px; }
+.search-bar input { flex-grow: 1; border: none; outline: none; background: transparent; font-size: 16px; }
+
+/* DATE INPUT */
+.date-filter-container {
+    height: 44px;
 }
 
-.search-bar input {
-    flex-grow: 1;
-    border: none;
+.date-input {
+    height: 100%;
+    background: #FFFFFF;
+    border: 1px solid #EEEEEE;
+    border-radius: 8px;
+    padding: 0 15px;
+    font-family: inherit;
+    color: #666;
     outline: none;
-    background: transparent;
-    font-size: 16px;
+    cursor: pointer;
+}
+
+.date-input:focus {
+    border-color: #967B56; /* Couleur accent dorée */
 }
 
 /* ---------------------------------------------------- */
 /* Section Profil Admin */
 /* ---------------------------------------------------- */
 
-.admin-profile-section {
-    display: flex;
-    align-items: center;
-}
-
-.profile-icon {
-    font-size: 24px;
-    color: #333; 
-    margin-right: 10px;
-}
-
+.admin-profile-section { display: flex; align-items: center; }
+.profile-icon { font-size: 24px; color: #333; margin-right: 10px; }
 .admin-text {
     font-family: 'Roboto', sans-serif;
     font-weight: 700;
@@ -123,9 +120,8 @@ body {
     white-space: nowrap; 
 }
 
-
 /* ---------------------------------------------------- */
-/* Metric Cards Section (Inchangé) */
+/* Metric Cards Section */
 /* ---------------------------------------------------- */
 
 .metric-cards {
@@ -135,33 +131,17 @@ body {
 }
 
 .card {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 20px;
-    border-radius: 12px;
-    background: #F8F8F8;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    min-height: 100px;
+    display: flex; align-items: center; width: 100%; padding: 20px;
+    border-radius: 12px; background: #F8F8F8;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); min-height: 100px;
 }
 
-/* Card Icon Styling */
 .card-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    margin-right: 15px;
+    display: flex; align-items: center; justify-content: center;
+    width: 50px; height: 50px; border-radius: 8px; margin-right: 15px;
 }
+.card-icon i { font-size: 24px; color: #FFFFFF; }
 
-.card-icon i {
-    font-size: 24px;
-    color: #FFFFFF;
-}
-
-/* Specific Card Icon Colors */
 .icon-familles { background: rgba(140, 150, 160, 0.2); } .icon-familles i { color: #8C96A0; }
 .icon-utilisateurs { background: rgba(255, 204, 0, 0.2); } .icon-utilisateurs i { color: #FFCC00; }
 .icon-contes { background: rgba(188, 142, 92, 0.2); } .icon-contes i { color: #BC8E5C; }
@@ -169,199 +149,63 @@ body {
 .icon-chant { background: rgba(171, 120, 255, 0.2); } .icon-chant i { color: #AB78FF; }
 .icon-proverbes { background: rgba(52, 168, 83, 0.2); } .icon-proverbes i { color: #34A853; }
 
-/* Card Content Styling */
-.card-content {
-    display: flex;
-    flex-direction: column;
-}
-
-.card-content .count {
-    font-size: 28px;
-    font-weight: 700;
-    color: #333;
-}
-
-.card-content .label {
-    font-size: 14px;
-    color: #666;
-    margin-top: 2px;
-}
+.card-content { display: flex; flex-direction: column; }
+.card-content .count { font-size: 28px; font-weight: 700; color: #333; }
+.card-content .label { font-size: 14px; color: #666; margin-top: 2px; }
 
 /* ---------------------------------------------------- */
-/* Recent Activities Section (Inchangé) */
+/* Recent Activities Section */
 /* ---------------------------------------------------- */
 
-.recent-activities {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-}
+.recent-activities { display: flex; gap: 30px; align-items: flex-start; }
+.recent-column { flex: 1; max-width: 100%; }
+.recent-column h2 { font-size: 20px; font-weight: 700; color: #000000; margin-bottom: 20px; }
 
-.recent-column { 
-    flex: 1; 
-    max-width: 100%; 
-}
+.activity-item { display: flex; align-items: center; }
+.item-details { flex-grow: 1; display: flex; flex-direction: column; }
 
-.recent-column h2 { 
-    font-size: 20px; 
-    font-weight: 700; 
-    color: #000000; 
-    margin-bottom: 20px; 
-}
-
-/* --- General Activity Item Styling --- */
-.activity-item { 
-    display: flex; 
-    align-items: center; 
-}
-
-.item-details {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* --- Récents Récits (Individual Story Cards) --- */
-
+/* --- Récents Récits --- */
 .story-card {
-    background: #FFFFFF;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 5px;
-    margin-bottom: 15px; 
-    padding: 0 15px; 
+    background: #FFFFFF; box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px; margin-bottom: 15px; padding: 0 15px; 
 }
+.story-card .activity-item { padding: 20px 0; }
 
-.story-card .activity-item {
-    padding: 20px 0;
-}
-
-/* Book Icon Styling */
 .item-icon-book {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 45px;
-    height: 45px;
-    border-radius: 8px;
-    background: #F8F5F1;
-    margin-right: 20px;
+    display: flex; align-items: center; justify-content: center;
+    width: 45px; height: 45px; border-radius: 8px; background: #F8F5F1; margin-right: 20px;
 }
+.item-icon-book i { font-size: 20px; color: #BC8E5C; }
 
-.item-icon-book i {
-    font-size: 20px;
-    color: #BC8E5C;
-}
+.item-title { font-size: 16px; font-weight: 700; color: #000000; margin-bottom: 4px; }
+.item-subtitle { font-size: 13px; color: #000000; }
+.item-date { font-size: 12px; color: #000000; white-space: nowrap; }
 
-.item-title { 
-    font-size: 16px; 
-    font-weight: 700; 
-    color: #000000; 
-    margin-bottom: 4px;
-}
-
-.item-subtitle { 
-    font-size: 13px; 
-    color: #000000; 
-}
-
-.item-date { 
-    font-size: 12px; 
-    color: #000000; 
-    white-space: nowrap;
-}
-
-
-/* --- Récents Familles (Container and Items) --- */
-
+/* --- Récents Familles --- */
 .family-list-container {
-    background: #FFFFFF;
-    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.25);
-    border-radius: 15px;
-    padding: 20px 25px; 
+    background: #FFFFFF; box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.25);
+    border-radius: 15px; padding: 20px 25px; 
 }
-
-.family-list-container .activity-item {
-    padding: 15px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
-}
-
-.family-list-container .activity-item:last-child,
-.family-list-container .no-border {
-    border-bottom: none;
-}
-
+.family-list-container .activity-item { padding: 15px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.25); }
+.family-list-container .activity-item:last-child, .family-list-container .no-border { border-bottom: none; }
 .family-item { padding-left: 0; }
 
-/* Family Item Details (Title/Subtitle) */
-.family-item .item-details {
-    flex-grow: 1; 
-}
+.family-item .item-title { font-weight: 700; font-size: 16px; line-height: 1.2; }
+.family-item .item-subtitle { font-size: 12px; line-height: 1.2; color: #000000; }
+.family-meta { display: flex; flex-direction: column; align-items: flex-end; margin-left: 20px; }
+.family-members { font-size: 13px; font-weight: 400; color: #000000; margin-top: 0; line-height: 1.8; }
+.family-meta .item-date { font-size: 12px; color: #000000; line-height: 1.2; }
 
-.family-item .item-title {
-    font-weight: 700;
-    font-size: 16px;
-    line-height: 1.2;
-}
-
-.family-item .item-subtitle {
-    font-size: 12px;
-    line-height: 1.2;
-    color: #000000;
-}
-
-/* Family Metadata (Members/Date) */
-.family-meta { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: flex-end; 
-    margin-left: 20px; 
-}
-
-.family-members { 
-    font-size: 13px; 
-    font-weight: 400; 
-    color: #000000; 
-    margin-top: 0;
-    line-height: 1.8;
-}
-
-.family-meta .item-date { 
-    font-size: 12px; 
-    color: #000000;
-    line-height: 1.2;
-}
-
-
-/* --- Media Query (Inchangé) --- */
-
+/* --- Media Query --- */
 @media (max-width: 800px) {
-    /* Ajustements pour la réactivité si nécessaire */
-    .metric-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .recent-activities {
-        flex-direction: column;
-    }
-    
-    .recent-column {
-        width: 100%;
-        max-width: none;
-    }
-    
-    .search-bar.new-search-bar {
-        /* Permettre à la barre de recherche de s'étendre sur les petits écrans */
-        width: 100%;
-    }
-    
-    .header-content-container {
-        /* Réduire le padding sur mobile */
-        padding: 0 15px; 
-    }
+    .metric-cards { grid-template-columns: repeat(2, 1fr); }
+    .recent-activities { flex-direction: column; }
+    .filters-wrapper { flex-direction: column; align-items: stretch; height: auto; padding: 10px 0; }
+    .search-bar.new-search-bar { width: 100%; }
+    .header-content-container { height: auto; padding: 15px; flex-direction: column; gap: 15px; }
+    .admin-profile-section { align-self: flex-end; }
 }
 
 @media (max-width: 550px) {
-    .metric-cards {
-        grid-template-columns: 1fr;
-    }
+    .metric-cards { grid-template-columns: 1fr; }
 }

@@ -1,258 +1,218 @@
-/* ============================= */
-/* 🎯 STRUCTURE GLOBALE */
-/* ============================= */
-
-.ajout-quiz-container {
-  max-width: 550px;
-  margin: 40px auto;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 40px;
-  font-family: 'Inter', sans-serif;
+/* --------------------------------------------------------- */
+/* 🧩 STRUCTURE PRINCIPALE */
+/* --------------------------------------------------------- */
+.main-content-quiz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 24px 30px;
+    box-sizing: border-box;
 }
 
-.page-title {
-  font-size: 26px;
-  font-weight: 700;
-  color: #222;
-  text-align: center;
-  margin-bottom: 8px;
+/* --------------------------------------------------------- */
+/* 🧩 HEADER */
+/* --------------------------------------------------------- */
+.header-user { width: 100%; max-width: 1000px; margin-bottom: 40px; }
+.header-content-container {
+    width: 100%; height: 83px;
+    background: rgba(235, 234, 234, 0.81);
+    border-radius: 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 25px;
+}
+.search-bar {
+    width: 375px; height: 44px;
+    background: #FFFFFF; box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 15px; display: flex; align-items: center; padding: 0 15px;
+}
+.search-bar input { border: none; outline: none; width: 100%; background: transparent; }
+.admin-profil-section { display: flex; align-items: center; }
+.admin-text { color: #AA7311; font-weight: 700; font-size: 20px; margin-left: 10px; }
+
+/* --------------------------------------------------------- */
+/* 🧩 TITRE */
+/* --------------------------------------------------------- */
+.page-title-center {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800; font-size: 32px;
+    color: #000; margin-bottom: 30px; text-align: center;
 }
 
-.ajout-quiz-container::before {
-  display: block;
-  text-align: center;
-  font-size: 15px;
-  color: #8c8c8c;
-  margin-bottom: 25px;
+/* --------------------------------------------------------- */
+/* 🧩 CARTE BLANCHE */
+/* --------------------------------------------------------- */
+.form-card {
+    width: 100%; max-width: 850px;
+    background: #FFFFFF;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 40px;
+    box-sizing: border-box;
+    margin-bottom: 50px;
 }
 
-/* ============================= */
-/* 🎯 FORM SECTIONS */
-/* ============================= */
-
-.form-section {
-  margin-bottom: 25px;
+/* --------------------------------------------------------- */
+/* 🧩 INPUTS & LABELS */
+/* --------------------------------------------------------- */
+.section-label {
+    font-weight: 700; font-size: 18px; margin-bottom: 10px; display: block; color: #000;
 }
 
-.form-label {
-  display: block;
-  font-weight: 600;
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: #333;
+.input-rounded {
+    width: 100%; height: 50px;
+    background: #FFFFFF; border: 1px solid #E0E0E0;
+    border-radius: 8px; padding: 0 15px;
+    font-size: 14px; color: #333; outline: none;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.05);
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+.input-rounded:focus { border-color: #AA7311; }
+
+.section-group { margin-bottom: 30px; }
+
+/* Select personnalisé */
+.custom-select-wrapper { position: relative; }
+.custom-select-wrapper select {
+    appearance: none; cursor: pointer;
+}
+.custom-select-wrapper::after {
+    content: 'expand_more'; font-family: 'Material Icons';
+    position: absolute; right: 15px; top: 13px; color: #AA7311; font-size: 24px; pointer-events: none;
 }
 
-.form-input,
-.form-textarea,
-.conte-select-input {
-  width: 100%;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: #333;
-  outline: none;
-  transition: border-color 0.2s ease;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
-}
-
-.form-input:focus,
-.form-textarea:focus,
-.conte-select-input:focus {
-  border-color: #967B56;
-}
-
-.form-textarea {
-  min-height: 80px;
-  resize: none;
-}
-
-/* ============================= */
-/* 🎯 SELECT PERSONNALISÉ */
-/* ============================= */
-
-.custom-select-container {
-  position: relative;
-  width: 100%;
-}
-
-.select-arrow {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  font-size: 22px;
-  color: #8c8c8c;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-/* ============================= */
-/* 🎯 QUESTIONS */
-/* ============================= */
-
-.questions-section h3 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #222;
-  margin-bottom: 15px;
-}
-
+/* --------------------------------------------------------- */
+/* 🧩 BLOC QUESTION */
+/* --------------------------------------------------------- */
 .question-block {
-  border: 1px solid #e4e4e4;
-  border-radius: 10px;
-  padding: 20px;
-  background: #fafafa;
-  margin-bottom: 25px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
+    border-bottom: 1px solid #eee; 
+    padding-bottom: 30px;
+}
+.question-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
 }
 
-.question-block h4 {
-  font-size: 15px;
-  color: #444;
-  font-weight: 700;
-  margin-bottom: 10px;
+/* NOUVEAU : Alignement Titre + Points */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espace entre "Question X" et les points */
 }
 
-/* Inputs dans une question */
-.form-input-small {
-  width: 80px;
-  margin-top: 5px;
-  padding: 5px 8px;
-  font-size: 13px;
+/* NOUVEAU : Style du badge Points */
+.points-badge {
+    display: flex;
+    align-items: center;
+    background-color: #F8F9FA;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid #E0E0E0;
 }
 
-/* ============================= */
-/* 🎯 PROPOSITIONS */
-/* ============================= */
-
-.propositions-section h5 {
-  font-size: 14px;
-  color: #555;
-  margin: 10px 0;
-}
-
-.proposition-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.form-input-inline {
-  flex: 1;
-  padding: 8px 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  font-size: 13px;
-}
-
-.checkbox-label {
-  font-size: 13px;
-  color: #444;
-}
-
-.btn-remove {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  color: #FF0D0D;
-  transition: transform 0.2s;
-}
-
-.btn-remove:hover {
-  transform: scale(1.2);
-}
-
-/* ============================= */
-/* 🎯 BOUTONS */
-/* ============================= */
-
-.btn-add,
-.btn-add-question {
-  background: #158B4D;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 14px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 10px;
-}
-
-.btn-add:hover,
-.btn-add-question:hover {
-  background: #0d6a3a;
-}
-
-.btn-add-question {
-  background: #967B56;
-  display: block;
-  margin: 0 auto;
-}
-
-.btn-remove-question {
-  background: none;
-  border: 1px solid #ff5252;
-  color: #ff5252;
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 10px;
-}
-
-.btn-remove-question:hover {
-  background: #ff5252;
-  color: #fff;
-}
-
-/* ============================= */
-/* 🎯 VALIDATION */
-/* ============================= */
-
-.submit-section {
-  text-align: center;
-  margin-top: 30px;
-}
-
-.btn-validate {
-  background: #967B56;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 25px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.btn-validate:hover {
-  background: #806645;
-}
-
-/* ============================= */
-/* 🎯 RESPONSIVE */
-/* ============================= */
-
-@media (max-width: 600px) {
-  .ajout-quiz-container {
-    padding: 25px 20px;
-    box-shadow: none;
-  }
-
-  .form-input,
-  .form-textarea,
-  .conte-select-input {
+.points-label {
     font-size: 13px;
-  }
+    font-weight: 600;
+    color: #666;
+    margin-right: 8px;
 }
+
+/* Version mini de l'input rounded pour les points */
+.input-small {
+    width: 60px; 
+    height: 30px; /* Moins haut que les autres */
+    padding: 0 5px;
+    text-align: center;
+    font-weight: 700;
+    color: #AA7311; /* Couleur dorée pour mettre en valeur les points */
+    margin: 0; /* Override des marges */
+}
+.input-small:focus {
+    border-color: #AA7311;
+}
+
+/* --------------------------------------------------------- */
+/* 🧩 TOGGLE QCM / VRAI-FAUX */
+/* --------------------------------------------------------- */
+.toggle-container {
+    display: flex; justify-content: center; gap: 40px;
+    margin: 25px 0;
+}
+
+.toggle-option {
+    display: flex; align-items: center; cursor: pointer; user-select: none;
+}
+
+.toggle-label { font-weight: 600; font-size: 16px; margin-right: 12px; color: #000; }
+
+.toggle-circle {
+    width: 24px; height: 24px;
+    border-radius: 50%; background: #EEE3CF; /* Beige inactif */
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+}
+
+.toggle-option.active .toggle-circle {
+    background: #AED581; /* Vert clair fond */
+}
+.toggle-option.active .toggle-circle::after {
+    content: ''; width: 10px; height: 10px;
+    background: #558B2F; /* Point vert foncé */
+    border-radius: 50%;
+}
+
+/* --------------------------------------------------------- */
+/* 🧩 LISTE DES PROPOSITIONS */
+/* --------------------------------------------------------- */
+.proposition-row {
+    display: flex; align-items: center; margin-bottom: 15px; gap: 15px;
+}
+
+.check-circle {
+    width: 32px; height: 32px; flex-shrink: 0;
+    border-radius: 50%; background: #EEE3CF;
+    cursor: pointer; position: relative;
+    display: flex; align-items: center; justify-content: center;
+}
+.check-circle.checked { background: #AED581; }
+.check-circle.checked::after {
+    content: ''; width: 14px; height: 14px; background: #558B2F; border-radius: 50%;
+}
+
+.prop-input { flex-grow: 1; height: 45px; }
+
+.btn-trash {
+    background: transparent; border: 2px solid #FF5252;
+    border-radius: 6px; color: #FF5252;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s;
+}
+.btn-trash:hover { background: #FF5252; color: white; }
+
+/* --------------------------------------------------------- */
+/* 🧩 BOUTONS D'ACTION */
+/* --------------------------------------------------------- */
+.actions-row {
+    display: flex; gap: 15px; margin-top: 15px;
+}
+.btn-pill {
+    padding: 10px 20px; border-radius: 25px; border: none;
+    font-weight: 700; font-size: 14px; cursor: pointer; color: #FFF;
+    display: flex; align-items: center; gap: 5px;
+}
+.btn-green { background-color: #158B4D; }
+.btn-gold { background-color: #AA7311; }
+
+.form-footer {
+    display: flex; justify-content: flex-end; margin-top: 40px;
+}
+.btn-validate-big {
+    background-color: #AA7311; color: white;
+    padding: 14px 50px; border-radius: 30px;
+    border: none; font-size: 18px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 10px rgba(170, 115, 17, 0.3);
+}
+.btn-validate-big:hover { background-color: #8f600d; }

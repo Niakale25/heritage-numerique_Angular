@@ -1,65 +1,112 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user-service';
 
-interface AdminProfile {
-  lastName: string;
-  firstName: string;
-  email: string;
-  phone: string;
-  role: string;
-  memberSince: string;
-  currentPassword?: string;
-  newPassword?: string;
-  confirmPassword?: string;
-}
 @Component({
   selector: 'app-profil',
-  imports: [FormsModule],
+  standalone: true,
+  imports: [FormsModule, CommonModule],
   templateUrl: './profil.html',
   styleUrl: './profil.css'
 })
-export class Profil {
-  // Données de l'administrateur
-  profile: AdminProfile = {
-    lastName: 'Diakité',
-    firstName: 'Niakalé',
-    email: 'niakalé.diakite@mail.com',
-    phone: '07 55 55 55 55',
-    role: 'Administrateur',
-    memberSince: '16/10/2025',
+export class Profil implements OnInit {
+  
+  profil: any = {};
+
+  passwordForm = {
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
   };
 
-  // État du composant
   isEditing = false;
   showPassword = false;
+  isLoading = false;
+  message: string = ''; 
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
-  /**
-   * Active ou désactive le mode édition
-   */
+  ngOnInit(): void {
+    this.loadProfile();
+  }
+
+  loadProfile() {
+    this.userService.getProfil().subscribe({
+      next: (value) => {
+        this.profil = value;
+      },
+      error: (err) => {
+        console.error('Erreur chargement profil:', err);
+        this.message = "Impossible de charger le profil.";
+      },
+    });
+  }
+
   toggleEditMode(enable: boolean): void {
     this.isEditing = enable;
+    this.message = '';
     if (!enable) {
-      // Annuler les modifications (si l'annulation était complète, il faudrait une sauvegarde)
-      this.profile.newPassword = '';
-      this.profile.confirmPassword = '';
+      // Réinitialisation complète du formulaire mot de passe
+      this.passwordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
+      this.loadProfile(); 
     }
   }
 
-  /**
-   * Simule l'enregistrement du profil
-   */
   saveProfile(): void {
-    if (this.profile.newPassword !== this.profile.confirmPassword) {
-      console.error("Les nouveaux mots de passe ne correspondent pas.");
-      return;
+    this.message = '';
+
+    // --- LOGIQUE DE VALIDATION MOT DE PASSE ---
+    
+    // Si l'utilisateur a commencé à remplir un champ de nouveau mot de passe
+    const hasNewPassword = this.passwordForm.newPassword || this.passwordForm.confirmPassword;
+
+    if (hasNewPassword) {
+        // 1. OBLIGATION : Le mot de passe actuel doit être saisi
+        if (!this.passwordForm.currentPassword) {
+            this.message = "Erreur : Vous devez saisir votre mot de passe actuel pour valider le changement.";
+            return;
+        }
+
+        // 2. VALIDATION : Les nouveaux mots de passe doivent correspondre
+        if (this.passwordForm.newPassword !== this.passwordForm.confirmPassword) {
+            this.message = "Erreur : Les nouveaux mots de passe ne correspondent pas.";
+            return;
+        }
     }
-    // Logique d'appel API pour la mise à jour des données...
-    console.log('Profil mis à jour:', this.profile);
-    this.isEditing = false;
+
+    this.isLoading = true;
+
+    // Préparation du payload
+    const payload: any = {
+      nom: this.profil.nom,
+      prenom: this.profil.prenom,
+      email: this.profil.email
+    };
+
+    // Ajout des mots de passe au payload seulement si modifiés
+    if (hasNewPassword) {
+      payload.motDePasse = this.passwordForm.newPassword;
+      // On envoie aussi l'ancien pour vérification côté backend (nom du champ à adapter selon ton API Java, ex: ancienMotDePasse)
+      payload.ancienMotDePasse = this.passwordForm.currentPassword; 
+    }
+
+    const userId = this.userService.userID;
+    
+    this.userService.updateProfil(userId, payload).subscribe({
+      next: (updatedUser) => {
+        this.profil = updatedUser;
+        this.isEditing = false;
+        this.isLoading = false;
+        this.message = "Profil mis à jour avec succès !";
+        // Vider le formulaire mot de passe pour sécurité
+        this.passwordForm = { currentPassword: '', newPassword: '', confirmPassword: '' };
+      },
+      error: (err) => {
+        console.error('Erreur mise à jour:', err);
+        this.isLoading = false;
+        this.message = "Erreur lors de la mise à jour. Vérifiez votre mot de passe actuel.";
+      }
+    });
   }
 }

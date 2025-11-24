@@ -72,10 +72,11 @@
 
 
 .admin-text{
+    font-family: 'Roboto', sans-serif;
     font-weight: 700;
     font-size: 20px;
     line-height: 36px;
-    color: #967B56;
+    color: #AA7311;
     white-space: nowrap;
 }
 
@@ -108,7 +109,7 @@
     border-radius: 5px;
     border: none;
     cursor: pointer;
-    background: #967B56; 
+    background: #AA7311; 
     color: #FFFFFF;
     font-size: 16px;
     font-weight: 700;
@@ -182,7 +183,7 @@
 
 .icon-book {
     font-size: 20px; 
-    color: #967B56; 
+    color: #AA7311; 
 }
 
 .item-details-quiz {

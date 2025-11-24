@@ -1,195 +1,161 @@
 /* ---------------------------------------------------- */
-/* Conteneur Principal et Centrage */
+/* 1. Conteneur Principal (main.conte-detail) */
+/* ---------------------------------------------------- */
+.conte-detail {
+    /* Centrage et contraintes de largeur pour la page de détail */
+    max-width: 900px; /* Largeur maximale pour le contenu */
+    margin: 0 auto; /* Centrage horizontal */
+    padding: 30px 20px;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f8f8f8; /* Un fond léger pour séparer du reste de l'app */
+    min-height: 100vh;
+}
+
+/* Styles pour les messages de chargement et d'erreur */
+.conte-detail > div[ngIf="isLoading()"],
+.conte-detail > div[ngIf="errorMessage()"] {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2em;
+    color: #49521D;
+}
+
+/* ---------------------------------------------------- */
+/* 2. La Carte Principale du Contenu (.card) */
+/* ---------------------------------------------------- */
+.card {
+    background-color: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+/* Titre du Conte */
+.card h2 {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #333;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #EEE;
+    padding-bottom: 10px;
+}
+
+/* ---------------------------------------------------- */
+/* 3. Métadonnées (Famille, Catégorie, Lieu) */
+/* ---------------------------------------------------- */
+.meta {
+    background-color: #f5f5f5;
+    border-left: 5px solid #967b56; /* Couleur accentuée */
+    padding: 15px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+    font-size: 0.95em;
+    color: #555;
+}
+
+.meta strong {
+    color: #333;
+    font-weight: 600;
+}
+
+
+/* ---------------------------------------------------- */
+/* 4. Média (Image, PDF, Audio) */
 /* ---------------------------------------------------- */
 
-.main-content-reader {
-    /* Le conteneur principal à côté de la sidebar */
-    flex-grow: 1;
-    display: flex;
-    justify-content: center; /* Centre le contenu horizontalement */
-    padding: 20px;
-}
-
-.reader-container {
-    /* Simule la zone de travail définie par les coordonnées absolues */
-    position: relative;
-    width: 700px; /* Largeur pour contenir le lecteur de 639px + marges */
-    padding-top: 50px; /* Espace pour le titre et la flèche */
-}
-
-.back-arrow {
-    position: absolute;
-    top: 0;
-    left: -50px; 
-    font-size: 24px;
-    color: #000;
-    cursor: pointer;
-}
-
-.story-title {
-    position: absolute;
-    top: -5px;
-    left: 100px; 
-    
-    font-family: 'Roboto', sans-serif;
-    font-weight: 700;
-    font-size: 32px;
-    line-height: 1.2;
-    color: #000000;
-    /* max-width pour éviter que le titre ne chevauche la flèche */
-    max-width: 80%; 
-    white-space: nowrap; 
-}
-
-.language-selector-container {
-  
-    position: relative;
-    width: 135px;
-    height: 34px;
-    margin-top: 60px; /* Espace sous le titre */
-    
-    background: #FFFFFF;
-    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-}
-
-.language-select {
-    /* Masquer l'apparence par défaut */
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    
-    width: 100%;
-    height: 100%;
-    padding: 0 30px 0 10px; 
-    border: none;
-    background: transparent;
-    outline: none;
-    cursor: pointer;
-    
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    font-size: 14px;
-    color: #333;
-}
-
-.language-selector-container .select-arrow {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 20px;
-    color: #333;
-    pointer-events: none;
-}
-
-.media-player-card {
-    width: 639px;
-    height: 242px;
-    margin-top: 25px; /* Espace sous le sélecteur */
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px;
-}
-
-.media-image {
-    width: 100%;
-    height: 100%;
+/* Image */
+.thumbnail {
+    width: 100%; /* L'image prend toute la largeur de la carte */
+    max-height: 350px;
     object-fit: cover;
-    display: block;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }
 
-.media-controls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
+/* PDF Viewer (Object ou Canvas) */
+/* J'ai utilisé vos styles, mais je les ai optimisés pour le conteneur. */
+.pdf-canvas {
     width: 100%;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(5px);
+    /* Utilisation de min-height pour s'assurer que l'objet est visible */
+    min-height: 600px; 
+    border: 1px solid #c7b8a4;
+    border-radius: 6px;
+    margin-top: 20px;
+    display: block; /* S'assurer qu'il prend toute la ligne */
+}
+
+
+/* ---------------------------------------------------- */
+/* 5. Description / Texte */
+/* ---------------------------------------------------- */
+.card > div:not(.pdf-viewer) p { /* Pour cibler la description si ce n'est pas un PDF */
+    font-size: 1.1em;
+    line-height: 1.8;
+    color: #444;
+    text-align: justify;
+    margin-top: 20px;
+}
+
+
+/* ---------------------------------------------------- */
+/* 6. Lecteur Audio (Adaptation de vos styles) */
+/* ---------------------------------------------------- */
+
+.audio-player {
     display: flex;
     align-items: center;
-    padding: 0 20px;
+    gap: 15px;
+    padding: 15px;
+    margin-top: 20px;
+    background-color: #eff3e7; /* Couleur douce */
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .play-button {
-    width: 40px;
-    height: 40px;
-    background: rgba(150, 123, 86, 0.8); 
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* Bouton Play/Pause */
+    background: #49521D; /* Couleur principale */
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
     cursor: pointer;
-    flex-shrink: 0;
+    font-weight: 600;
+    transition: background-color 0.2s;
+    flex-shrink: 0; /* Empêche le bouton de rétrécir */
 }
 
-.play-icon {
-    font-size: 24px;
-    color: #FFFFFF;
-    margin-left: 2px; 
-}
-
-.progress-section {
-    display: flex;
-    align-items: center;
-    flex-grow: 1;
-    margin-left: 15px;
-    gap: 10px;
-}
-
-.audio-time {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    font-size: 15px;
-    color: #49521D;
-    flex-shrink: 0;
-}
-
-.progress-bar-container {
-    /* Group 139 */
-    flex-grow: 1;
-    height: 9px;
-    background: #E5E5E5;
-    border-radius: 4px;
-    overflow: hidden;
+.play-button:hover {
+    background-color: #6a7c3b;
 }
 
 .progress-bar {
+    /* La barre de progression colorée (le remplissage) */
+    background: #967b56; /* Couleur accentuée */
     height: 100%;
-    background: #49521D; 
+    border-radius: 4px;
+    transition: width 0.1s linear;
 }
 
-.content-card {
-    width: 637px;
-    height: 239px;
-    margin-top: 25px; 
-    
-    background: #FFFFFF;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    padding: 20px;
-}
-
-.story-text {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #000000;
-    text-align: justify;
-}
-.back-arrow-container {
-    /* Utilise la position absolue précédemment définie pour la flèche */
-    position: absolute;
-    top: 0;
-    left: -50px; 
-    
-    /* Rend la zone de clic un peu plus grande et indique l'interactivité */
-    padding: 10px;
-    margin: -10px; /* Compense le padding pour conserver la position visuelle */
+.progress-bar-container { /* Le conteneur cliquable de la barre */
+    flex-grow: 1;
+    height: 8px;
+    background: #DDD;
+    border-radius: 4px;
     cursor: pointer;
-    z-index: 10; /* Assure que le clic fonctionne sur la flèche */
+    overflow: hidden;
+}
+
+.times {
+    display: flex;
+    gap: 10px;
+    font-size: 0.9em;
+    color: #555;
+    flex-shrink: 0;
+}
+
+/* Masquer l'élément audio HTML par défaut */
+audio {
+    display: none;
 }

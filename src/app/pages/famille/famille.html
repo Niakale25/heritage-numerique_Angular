@@ -1,16 +1,18 @@
 <div class="page-container-with-sidebar">
     <main class="main-content-familles">
         
+        <!-- HEADER -->
         <header class="header-familles">
             <div class="header-content-container">
                 
                 <div class="search-bar">
                     <i class="material-icons">search</i>
+                    <!-- Utilisation de (input) pour une recherche fluide -->
                     <input 
                         type="text" 
                         placeholder="Rechercher par nom ou admin..." 
                         [(ngModel)]="searchTerm" 
-                        (ngModelChange)="applyFilters()"
+                        (input)="applyFilters()"
                     >
                 </div>
                 
@@ -24,6 +26,7 @@
 
         <h1 class="page-title-familles">Gestion des Familles</h1>
         
+        <!-- LOADING / ERROR -->
         <div *ngIf="isLoading" class="loading-indicator">
             <p>Chargement des familles...</p>
         </div>
@@ -32,14 +35,19 @@
             <button (click)="loadAllFamilles()">Réessayer</button>
         </div>
 
+        <!-- LISTE -->
         <div class="familles-list-card" *ngIf="!isLoading && !errorMessage">
             
             <div class="card-header-familles">
-                <select class="filter-select" [(ngModel)]="filterPeriod" (ngModelChange)="applyFilters()">
-                    <option value="all">Toutes les Périodes</option>
-                    <option value="last_week">Dernière semaine</option>
-                    <option value="last_month">Dernier mois</option>
-                </select>
+                <!-- J'ai ajouté un wrapper pour l'icône de filtre -->
+                <div class="select-wrapper">
+                    <select class="filter-select" [(ngModel)]="filterPeriod" (change)="applyFilters()">
+                        <option value="all">Toutes les Périodes</option>
+                        <option value="last_week">Dernière semaine</option>
+                        <option value="last_month">Dernier mois</option>
+                    </select>
+                    <i class="material-icons select-icon">filter_list</i>
+                </div>
             </div>
 
             <div class="familles-list">
@@ -47,28 +55,32 @@
                 <div class="family-item-card" *ngFor="let famille of famillesFiltrees">
                     <div class="item-details-famille">
                         <span class="item-title-famille">Famille {{ famille.nom }}</span>
-                        <span class="item-subtitle-famille">Admin: {{ famille.prenomAdmin }} {{ famille.nomAdmin }} ({{ famille.emailAdmin }})</span>
+                        <span class="item-subtitle-famille">
+                            Admin: {{ famille.prenomAdmin }} {{ famille.nomAdmin }} 
+                            <span class="email-text">({{ famille.emailAdmin }})</span>
+                        </span>
                     </div>
+                    
                     <div class="family-meta-famille">
                         <span class="item-date-famille">Créée le: {{ famille.dateCreation | date:'dd/MM/yyyy' }}</span>
-                        <span class="family-members-famille">{{ famille.nombreMembres }} membres</span>
+                        <span class="family-members-famille">{{ famille.nombreMembres || 0 }} membres</span>
                         <span 
                             class="family-status" 
-                            [class.active]="famille.isActive ?? false" 
-                            [class.inactive]="!(famille.isActive ?? false)"
+                            [class.status-active]="famille.isActive" 
+                            [class.status-inactive]="!famille.isActive"
                         >
-                            Statut: {{ getStatusLabel(famille.isActive) }}
+                            {{ getStatusLabel(famille.isActive) }}
                         </span>
                     </div>
                 </div>
                 
+                <!-- Message Vide -->
                 <div *ngIf="famillesFiltrees.length === 0" class="text-muted-famille">
-                    <p>Aucune famille ne correspond aux critères de recherche ou de filtre.</p>
+                    <p>Aucune famille ne correspond à votre recherche.</p>
                 </div>
             </div>
             
         </div>
         
     </main>
-
 </div>

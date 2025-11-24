@@ -1,79 +1,63 @@
-<main class="main-content-reader">
-  <!-- ÉTAT : Chargement -->
-  <ng-container *ngIf="isLoading(); else loadedOrError">
-    <div class="reader-container text-center p-10">
-      <h2>Chargement du conte...</h2>
+<main class="conte-detail">
+
+  <div *ngIf="isLoading()">Chargement...</div>
+  <div *ngIf="errorMessage()">{{ errorMessage() }}</div>
+
+  <div *ngIf="conteDetails() as conte" class="card">
+
+    <!-- IMAGE -->
+    <img class="thumbnail" [src]="getThumbnailUrl(conte.urlPhoto)" alt="image-conte">
+
+    <h2>{{ conte.titre }}</h2>
+
+    <p class="meta">
+      <strong>Famille :</strong> {{ conte.nomFamille || 'Non renseigné' }} <br>
+      <strong>Catégorie :</strong> {{ conte.nomCategorie || 'Aucune' }} <br>
+      <strong>Lieu :</strong> {{ conte.lieu || 'N/A' }} <br>
+    </p>
+
+    <!-- PDF -->
+    <div *ngIf="isPdf(conte.urlFichier)">
+      <!-- <canvas  class="pdf-canvas">
+      </canvas> -->
+        <object 
+          [data]="getTrustedResourceUrl(conte.urlFichier)" 
+          type="application/pdf" class="pdf-canvas">
+        </object>
     </div>
-  </ng-container>
 
-  <!-- ÉTAT : Chargé -->
-  <ng-template #loadedOrError>
-    <ng-container *ngIf="conteDetails(); else errorState">
-      <div class="reader-container">
-        <!-- RETOUR -->
-        <div class="back-arrow-container" [routerLink]="['/accueil/conte']">
-          <i class="material-icons back-arrow">arrow_back</i>
+    <!-- DESCRIPTION -->
+    <div *ngIf="!isPdf(conte.urlFichier)">
+      <p>{{ conte.description }}</p>
+    </div>
+
+    <!-- AUDIO -->
+    <div *ngIf="isAudio(getFileUrl(conte.urlFichier))">
+
+      <audio #audioPlayer
+             [src]="getFileUrl(conte.urlFichier)"
+             (timeupdate)="currentTime = audioPlayer.currentTime"
+             (loadedmetadata)="duration = audioPlayer.duration">
+      </audio>
+
+      <div class="audio-player">
+
+        <button class="play-button" (click)="toggleAudio(audioPlayer)">
+          {{ isPlaying ? 'Pause' : 'Lecture' }}
+        </button>
+
+        <div class="progress-bar" (click)="seekAudio($event, audioPlayer)">
+          <div class="progress" [style.width.%]="(currentTime / duration) * 100"></div>
         </div>
 
-        <!-- TITRE -->
-        <h1 class="story-title">{{ conteDetails()!.titre }}</h1>
-
-        <!-- SÉLECTEUR DE LANGUE -->
-        <div class="language-selector-container">
-          <select class="language-select">
-            <option selected>Bambara</option>
-            <option>Français</option>
-            <option>Anglais</option>
-          </select>
-          <i class="material-icons select-arrow">keyboard_arrow_down</i>
+        <div class="times">
+          <span>{{ formatTime(currentTime) }}</span>
+          <span>{{ formatTime(duration) }}</span>
         </div>
 
-        <!-- IMAGE + PLAYER -->
-        <div class="media-player-card">
-          <img
-            [src]="getThumbnailUrl(conteDetails()!.urlPhoto)"
-            [alt]="'Image du conte ' + conteDetails()!.titre"
-            class="media-image"
-          />
-
-          <div class="media-controls">
-            <div class="play-button">
-              <i class="material-icons play-icon">play_arrow</i>
-            </div>
-
-            <div class="progress-section">
-              <span class="audio-time">3:45</span>
-              <div class="progress-bar-container">
-                <div class="progress-bar" style="width: 40%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- TEXTE DU CONTE -->
-        <div class="content-card">
-          <p class="story-text">{{ conteDetails()!.description }}</p>
-
-          <p class="story-author mt-4 text-right text-gray-500 font-medium">
-            — Raconté par {{ conteDetails()!.nomCreateur }}
-          </p>
-        </div>
       </div>
-    </ng-container>
 
-    <!-- ÉTAT : Erreur -->
-    <ng-template #errorState>
-      <div class="reader-container text-center p-8">
-        <h1 class="story-title text-red-500">Erreur</h1>
-        <p class="text-gray-600">{{ errorMessage() }}</p>
-        <div class="back-arrow-container mt-4 mx-auto" [routerLink]="['/accueil/conte']">
-          <button
-            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
-          >
-            Retour à la liste
-          </button>
-        </div>
-      </div>
-    </ng-template>
-  </ng-template>
+    </div>
+
+  </div>
 </main>

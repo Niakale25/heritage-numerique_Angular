@@ -1,65 +1,68 @@
-.principal{
+/* 1. Conteneur Principal et Disposition (Pas trop de changement, juste l'ombre portée) */
+.principal {
     height: 100vh;
     width: 100vw;
-    background-color: #F8F8F8; /* Couleur de fond pour le reste de la page */
+    background-color: #FFFFFF; /* Fond légèrement plus gris/bleuté pour la modernité */
     display: grid;
-    grid-template-columns: 347px 1fr; 
-    
-    /* Assure que la barre latérale et le contenu principal s'étirent en hauteur */
+    /* Largeur ajustée pour un look moins encombrant */
+    grid-template-columns: 280px 1fr;
     grid-template-rows: 1fr;
 }
-.menu .selected{
-    background-color: #8D724D;
-    color: whitesmoke;
-}
 
+/* 2. Style du Conteneur de la Sidebar (Élévation et coins arrondis) */
 .sidebar-container {
-    width: 100%; 
-    height: 100%; /* S'étend sur la ligne 1fr de la Grid */   
+    width: 100%;
+    height: 100%;
     background: #FFFFFF;
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);   
+    /* Ombre subtile, légère, qui donne de l'élévation */
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.05); 
+    border-radius: 0 10px 10px 0; /* Coins arrondis sur le côté droit */
     display: flex;
     flex-direction: column;
-    padding: 20px 0; 
-    font-family: Arial, sans-serif;
-    overflow-y: auto; 
+    padding: 20px 0;
+    overflow-y: auto;
+    /* Assure que l'ombre est visible en débordant légèrement */
+    position: relative; 
+    z-index: 10;
 }
 
-.main{
-    height: 100%; 
-    overflow-y: auto; 
-    padding: 30px; 
+.main {
+    height: 100%;
+    overflow-y: auto;
+    padding: 30px;
 }
 
 /* --- 1. HEADER (Logo et Titre) --- */
 .header {
     display: flex;
     align-items: center;
-    padding: 0 20px 20px 20px; 
+    padding: 0 20px 20px 20px;
+    margin-bottom: 10px; /* Espace après l'en-tête */
 }
 
 .logo {
-    width: 40px; 
-    height: 40px;
-    margin-right: 10px;
+    width: 32px; /* Logo plus petit */
+    height: 32px;
+    margin-right: 12px;
 }
 
 .title {
-    font-size: 20px;
-    font-weight: bold;
-    color: #000000;
+    font-size: 18px; /* Taille légèrement réduite */
+    font-weight: 600; /* Plus de poids */
+    color: #1A1A1A; /* Noir plus profond */
 }
 
+/* Séparateur plus subtil */
 .separator {
     border: none;
-    border-top: 1px solid #CCCCCC;
-    margin: 0;
+    border-top: 1px solid #EAEAEA;
+    margin: 0 20px 15px 20px; /* Marge autour */
 }
 
-/* --- 2. MENU DE NAVIGATION --- */
+/* --- 2. MENU DE NAVIGATION  --- */
 .menu {
-    flex-grow: 1; 
-    padding: 10px 0;
+    flex-grow: 1;
+    padding: 5px 0; /* Réduire un peu le padding */
 }
 
 .menu ul {
@@ -68,26 +71,69 @@
     margin: 0;
 }
 
+/* L'élément de navigation lui-même */
 .nav-item {
     display: flex;
     align-items: center;
-    padding: 12px 20px; /* Padding interne pour la hauteur */
+    padding: 10px 20px; /* Padding ajusté */
+    margin: 5px 15px; /* Marge pour 'flotter' les éléments du menu */
     cursor: pointer;
-    font-size: 16px;
-    color: #333333;
-    transition: background-color 0.2s;
+    font-size: 15px;
+    font-weight: 500;
+    color: #000000;
+    border-radius: 6px; /* Coins arrondis pour chaque élément */
+    transition: background-color 0.2s, color 0.2s, transform 0.1s; /* Transitions fluides */
+    position: relative; /* Pour l'effet de barre latérale */
 }
 
+/* Effet de survol (Hover) */
 .nav-item:hover {
-    background-color: #F0F0F0; 
+    background-color: #F0F8FF; /* Bleu très léger au survol */
+    color: #AA7311; /* Couleur du thème au survol */
+    transform: translateX(3px); /* Petit mouvement vers la droite */
 }
 
-.nav-item span:first-child { /* Cible l'icône Material Icon */
+/* Icônes */
+.nav-item span:first-child { 
     margin-right: 15px;
-    font-size: 20px;
-    color: #5D4037; /* Couleur brun foncé pour les icônes du menu */
+    font-size: 18px;
+    color: #AA7311; /* Icônes plus discrètes */
+    transition: color 0.2s;
 }
 
+/* Changement de couleur de l'icône au survol */
+.nav-item:hover span:first-child {
+    color: #AA7311; /* Icône de la couleur du thème au survol */
+}
+
+/* État Sélectionné (Le plus d'effet) */
+.menu .selected {
+    background-color: #AA7311; /* Fond de couleur primaire */
+    color: #FFFFFF; /* Texte blanc */
+    /* Ombre très subtile pour l'effet "pop" */
+    box-shadow: 0 4px 10px rgba(170, 115, 17, 0.4); 
+    font-weight: 600;
+}
+
+/* Icône de l'élément sélectionné */
+.menu .selected span:first-child {
+    color: #FFFFFF;
+}
+
+/* EFFET VISUEL : Petite barre de couleur à gauche pour l'élément sélectionné */
+.menu .selected::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #FFD700; /* Couleur d'accent (Or) */
+    border-radius: 6px 0 0 6px;
+}
+
+
+/* --- 3. BOUTON D'ACTION (Ajouter un Contenu) --- */
 .add-button-wrapper {
     padding: 15px 20px;
 }
@@ -97,21 +143,26 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 10px;
+    padding: 12px; /* Plus haut */
     border: none;
-    border-radius: 5px;
+    border-radius: 8px; /* Coins plus arrondis */
     
-    background-color: #A3855B; /* Couleur du bouton */
+    background-color: #AA7311; /* Couleur d'accent différente (Bleu Moderne) */
     color: #FFFFFF;
     
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.1s;
+    
+    /* Ombre sur le bouton pour un effet 3D */
+    box-shadow: 0 4px 15px rgba(59, 113, 202, 0.4);
 }
 
 .add-button:hover {
-    background-color: #8D724D;
+    background-color: #2F5BB7; /* Bleu plus foncé au survol */
+    transform: translateY(-2px); /* Léger soulèvement */
+    box-shadow: 0 6px 20px rgba(59, 113, 202, 0.5); /* Ombre intensifiée */
 }
 
 .add-button .material-icons {
@@ -122,26 +173,32 @@
 
 /* --- 4. DECONNEXION --- */
 .bottom-separator {
-    border-top: 1px solid #E0E0E0; 
-    margin-top: 5px;
+    border-top: 1px solid #EAEAEA; 
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .logout {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
+    padding: 12px 20px;
+    margin: 5px 15px; /* Ajout de la même marge que les nav-item */
     cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    color: #D32F2F; /* Rouge pour la déconnexion */
+    font-size: 18px;
+    font-weight: 700;
+    color: #C62828; /* Rouge un peu plus foncé */
+    border-radius: 6px;
+    transition: background-color 0.2s, transform 0.1s;
 }
 
 .logout:hover {
-    background-color: #FEE;
+    background-color: #FFEBEE; /* Fond rouge très très léger */
+    transform: translateX(3px);
 }
 
 .logout .material-icons {
     margin-right: 15px;
-    font-size: 20px;
-    color: #D32F2F;
+    font-size: 18px;
+    color: #C62828;
+    transition: color 0.2s;
 }

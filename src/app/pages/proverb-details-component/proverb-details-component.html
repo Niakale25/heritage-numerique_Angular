@@ -2,27 +2,25 @@
   <!-- Image de fond -->
   <div
     class="background"
-    [style.background-image]="'url(' + (proverb.urlPhoto || proverb.photoProverbe || 'assets/images/baobab.jpg') + ')'">
+    [style.background-image]="'url(' + getImageUrl(proverb) + ')'">
   </div>
 
-  <!-- Overlay principal -->
-  <div class="overlay-1"></div>
+  <!-- Overlay sombre -->
+  <div class="overlay"></div>
 
-  <!-- Carte principale -->
-  <div class="overlay-2">
-    <p class="proverb-text">
-      "{{ proverb.titre }}"
-    </p>
+  <!-- Carte du proverbe -->
+  <div class="card">
+    <h1 class="proverb-text">“{{ proverb.titre }}”</h1>
 
-    <div class="line-left"></div>
-    <span class="origin">{{ proverb.origineProverbe || 'Origine inconnue' }}</span>
-    <div class="line-right"></div>
+    <div class="separator">
+      <div class="line"></div>
+      <span class="origin">{{ proverb.origineProverbe || 'Origine inconnue' }}</span>
+      <div class="line"></div>
+    </div>
 
     <h2 class="signification-title">Signification</h2>
-    <p class="signification-text">
-      {{ proverb.significationProverbe }}
-    </p>
+    <p class="signification-text">{{ proverb.significationProverbe }}</p>
 
-    <button (click)="goBack()" class="btn-back">← Retour</button>
+    <button class="btn-back" (click)="goBack()">← Retour</button>
   </div>
 </div>

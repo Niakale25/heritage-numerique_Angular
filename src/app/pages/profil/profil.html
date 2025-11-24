@@ -1,26 +1,30 @@
-<!-- J'ai inclus une navigation simplifiée à gauche pour respecter l'alignement de la maquette -->
 <div class="page-wrapper">
-  
-    <!-- En-tête de la page -->
+    
     <header class="profile-header">
         <h1 class="header-title">Profil Administrateur</h1>
     </header>
 
-    <div class="profile-content-container">
+    <!-- Message de feedback -->
+    <div *ngIf="message" class="alert-message" [ngClass]="message.includes('Erreur') ? 'error' : 'success'">
+        {{ message }}
+    </div>
+
+    <div class="profile-content-container" *ngIf="profil">
+        <!-- Carte Gauche : Résumé -->
         <div class="user-card">
             <div class="user-icon-bg">
                 <i class="material-icons user-icon">person</i>
             </div>
             
-            <h2 class="user-name">{{ profile.firstName }} {{ profile.lastName }}</h2>
-            <p class="user-role">{{ profile.role }}</p>
+            <h2 class="user-name">{{ profil.prenom }} {{ profil.nom }}</h2>
+            <p class="user-role">{{ profil.role || 'ADMINISTRATEUR' }}</p>
             
             <div class="separator"></div>
 
-            <p class="member-since">Membre depuis le {{ profile.memberSince }}</p>
+            <p class="member-since" *ngIf="profil.dateCreation">Membre depuis le {{ profil.dateCreation | date:'dd/MM/yyyy' }}</p>
         </div>
 
-        <!-- Carte de Détails (Rectangle 199) - Colonne de droite -->
+        <!-- Carte Droite : Formulaire -->
         <div class="details-card">
             
             <!-- Section 1: Information Personnelle -->
@@ -34,22 +38,17 @@
                     <!-- Nom -->
                     <div class="form-group">
                         <label>Nom</label>
-                        <input type="text" [(ngModel)]="profile.lastName" name="lastName" [disabled]="!isEditing" class="input-field" placeholder="Nom">
+                        <input type="text" [(ngModel)]="profil.nom" name="lastName" [disabled]="!isEditing" class="input-field" placeholder="Nom">
                     </div>
                     <!-- Prénom -->
                     <div class="form-group">
                         <label>Prénom</label>
-                        <input type="text" [(ngModel)]="profile.firstName" name="firstName" [disabled]="!isEditing" class="input-field" placeholder="Prénom">
+                        <input type="text" [(ngModel)]="profil.prenom" name="firstName" [disabled]="!isEditing" class="input-field" placeholder="Prénom">
                     </div>
                     <!-- Email -->
-                    <div class="form-group">
+                    <div class="form-group wide-group">
                         <label>Email</label>
-                        <input type="email" [(ngModel)]="profile.email" name="email" [disabled]="!isEditing" class="input-field" placeholder="Email">
-                    </div>
-                    <!-- Téléphone -->
-                    <div class="form-group">
-                        <label>Téléphone</label>
-                        <input type="tel" [(ngModel)]="profile.phone" name="phone" [disabled]="!isEditing" class="input-field" placeholder="Téléphone">
+                        <input type="email" [(ngModel)]="profil.email" name="email" [disabled]="!isEditing" class="input-field" placeholder="Email">
                     </div>
                 </form>
             </div>
@@ -64,54 +63,67 @@
                 </div>
                 
                 <form class="security-form" (submit)="saveProfile()">
-                    <!-- Mot de passe actuel -->
-                    <div class="form-group wide-group">
-                        <label>Mot de passe</label>
+                    
+                    <!-- Mot de passe actuel (OBLIGATOIRE pour changer le mot de passe) -->
+                    <div class="form-group wide-group" *ngIf="isEditing">
+                        <label>Mot de passe actuel <span class="required-star">*</span></label>
                         <div class="password-input-wrapper input-field">
+                            <!-- autocomplete="new-password" empêche le navigateur de pré-remplir ce champ -->
                             <input 
                                 [type]="showPassword ? 'text' : 'password'" 
-                                [(ngModel)]="profile.currentPassword" 
+                                [(ngModel)]="passwordForm.currentPassword" 
                                 name="currentPassword" 
                                 [disabled]="!isEditing"
-                                placeholder="Entrer mot de passe actuel"
+                                placeholder="Saisissez votre mot de passe actuel"
+                                autocomplete="new-password"
                             >
-                            <!-- mdi:eye-outline -->
-                            <i class="material-icons eye-icon" (click)="showPassword = !showPassword">
-                                {{ showPassword ? 'visibility_off' : 'visibility' }}
-                            </i>
+                        
                         </div>
                     </div>
 
                     <!-- Nouveaux mots de passe -->
-                    <div class="form-grid">
+                    <div class="form-grid" *ngIf="isEditing">
                         <div class="form-group">
                             <label>Nouveau mot de passe</label>
-                            <input type="password" [(ngModel)]="profile.newPassword" name="newPassword" [disabled]="!isEditing" class="input-field" placeholder="Nouveau mot de passe">
+                            <input 
+                                type="password" 
+                                [(ngModel)]="passwordForm.newPassword" 
+                                name="newPassword" 
+                                [disabled]="!isEditing" 
+                                class="input-field" 
+                                placeholder="Nouveau mot de passe"
+                                autocomplete="new-password"
+                            >
                         </div>
                         <div class="form-group">
                             <label>Confirmer mot de passe</label>
-                            <input type="password" [(ngModel)]="profile.confirmPassword" name="confirmPassword" [disabled]="!isEditing" class="input-field" placeholder="Confirmer mot de passe">
+                            <input 
+                                type="password" 
+                                [(ngModel)]="passwordForm.confirmPassword" 
+                                name="confirmPassword" 
+                                [disabled]="!isEditing" 
+                                class="input-field" 
+                                placeholder="Confirmer mot de passe"
+                                autocomplete="new-password"
+                            >
                         </div>
                     </div>
+                    
+                    <p *ngIf="!isEditing" style="color: gray; font-style: italic; margin-top: 10px; font-size: 0.9rem;">
+                        Cliquez sur "Modifier le profil" pour changer vos informations ou votre mot de passe.
+                    </p>
                 </form>
             </div>
 
             <!-- Boutons d'action -->
             <div class="action-buttons">
-                <!-- Bouton Annuler (Rectangle 190) -->
-                @if (isEditing) {
-                    <button class="btn btn-cancel" (click)="toggleEditMode(false)">Annuler</button>
-                }
+                <button *ngIf="isEditing" class="btn btn-cancel" (click)="toggleEditMode(false)" [disabled]="isLoading">Annuler</button>
                 
-                <!-- Bouton Enregistrer (Rectangle 189) -->
-                @if (isEditing) {
-                    <button class="btn btn-save" (click)="saveProfile()">Enregistrer</button>
-                }
+                <button *ngIf="isEditing" class="btn btn-save" (click)="saveProfile()" [disabled]="isLoading">
+                    {{ isLoading ? 'Enregistrement...' : 'Enregistrer' }}
+                </button>
 
-                <!-- Bouton Modifier (Visible en mode lecture) -->
-                @if (!isEditing) {
-                    <button class="btn btn-save" (click)="toggleEditMode(true)">Modifier le profil</button>
-                }
+                <button *ngIf="!isEditing" class="btn btn-save" (click)="toggleEditMode(true)">Modifier le profil</button>
             </div>
         </div>
     </div>

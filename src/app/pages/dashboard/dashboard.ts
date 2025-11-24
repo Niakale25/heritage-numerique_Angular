@@ -1,78 +1,120 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms'; 
 import { RouterLink } from '@angular/router';
 import { SuperAdminDashboardDTO, ContenuRecentDTO } from '../../interfaces/dashboard-dto.interface';
 import { DashboardService } from '../../sevices/dashboard-service';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  // DatePipe est injecté ici, mais nous allons l'utiliser directement dans le template
-  // pour le formatDate afin de suivre l'approche Angular idiomatique.
-  imports: [CommonModule, DatePipe], 
+  imports: [CommonModule, DatePipe, FormsModule], 
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
 
-  // Propriétés pour l'affichage
   dashboardData: SuperAdminDashboardDTO | null = null;
+  
+  // Listes filtrées
+  filteredContenus: ContenuRecentDTO[] = [];
+  filteredFamilles: any[] = []; 
+  
+  // Critères de recherche
+  searchTerm: string = ''; 
+  selectedDate: string = ''; // ⭐️ NOUVEAU : date au format 'YYYY-MM-DD'
+
   isLoading: boolean = true;
   errorMessage: string | null = null;
-  adminName: string = "Super Admin"; // Valeur par défaut
-  datePipe: any;
-
-  // Injection du service et de DatePipe (pour la méthode formatDate)
+  adminName: string = "Super Admin";
+  
   constructor(
     private dashboardService: DashboardService,
-    ) {}
+    private authService: Auth
+  ) {}
 
   ngOnInit(): void {
+    const name = this.authService.getUserFullName();
+    if (name) {
+      this.adminName = name;
+    }
     this.loadDashboardData();
-    // Idéalement, charger le nom de l'admin ici depuis un service d'authentification
-    // Exemple: this.authService.getCurrentUser().subscribe(user => this.adminName = user.prenom);
   }
 
-  /**
-   * Charge les données du tableau de bord depuis le backend.
-   */
   loadDashboardData(): void {
     this.isLoading = true;
     this.errorMessage = null;
 
     this.dashboardService.getDashboardComplet().subscribe({
-      next: (data: SuperAdminDashboardDTO) => { // Type de données explicite
+      next: (data: SuperAdminDashboardDTO) => {
         this.dashboardData = data;
+        
+        // Initialisation des listes
+        this.filteredContenus = data.contenusRecents || [];
+        this.filteredFamilles = data.famillesRecentes || [];
+        
         this.isLoading = false;
-        console.log("Données du Dashboard chargées:", data);
       },
       error: (err) => {
-        // Mieux gérer l'erreur HTTP
-        this.errorMessage = err.message || "Échec de la récupération des données du tableau de bord.";
+        this.errorMessage = err.message || "Échec de la récupération.";
         this.isLoading = false;
-        console.error("Erreur de chargement du dashboard:", err);
+        console.error("Erreur:", err);
       }
     });
   }
 
-  /**
-   * Retourne le nom de l'icône Material Design approprié pour un type de contenu.
-   */
+  // ⭐️ FONCTION DE RECHERCHE MISE À JOUR (Texte + Date)
+  onSearch(): void {
+    if (!this.dashboardData) return;
+
+    const term = this.searchTerm.toLowerCase().trim();
+    const dateFilter = this.selectedDate; // Format "2023-11-24"
+
+    // Fonction utilitaire pour vérifier la date
+    const checkDate = (dateString: string | undefined): boolean => {
+        if (!dateFilter) return true; // Si pas de filtre date, on accepte tout
+        if (!dateString) return false;
+        // On compare le début de la chaîne ISO (ex: "2023-11-24T10:00...") avec le filtre
+        return dateString.startsWith(dateFilter);
+    };
+
+    // 1. Filtrer les Contenus
+    this.filteredContenus = (this.dashboardData.contenusRecents || []).filter(c => {
+      const matchesText = !term || (
+        c.titre.toLowerCase().includes(term) || 
+        c.nomCreateur.toLowerCase().includes(term) ||
+        c.prenomCreateur.toLowerCase().includes(term)
+      );
+      const matchesDate = checkDate(c.dateCreation);
+      
+      return matchesText && matchesDate;
+    });
+
+    // 2. Filtrer les Familles
+    this.filteredFamilles = (this.dashboardData.famillesRecentes || []).filter((f: any) => {
+      const matchesText = !term || (
+        f.nom.toLowerCase().includes(term) || 
+        f.nomAdmin.toLowerCase().includes(term) ||
+        f.prenomAdmin.toLowerCase().includes(term)
+      );
+      const matchesDate = checkDate(f.dateCreation);
+
+      return matchesText && matchesDate;
+    });
+  }
+
   getMaterialIconName(type: ContenuRecentDTO['typeContenu']): string {
     switch (type) {
       case 'CONTE': return 'book';
-      case 'ARTISANAT': return 'brush'; // Icône plus spécifique à l'artisanat
+      case 'ARTISANAT': return 'brush';
       case 'PROVERBE': return 'format_quote';
-      case 'DEVINETTE': return 'quiz'; // Icône quiz est plus pertinent que music_note
+      case 'DEVINETTE': return 'quiz';
       case 'PHOTO': return 'photo_library';
-      default: return 'list_alt'; // Icône par défaut
+      default: return 'list_alt';
     }
   }
 
-  /**
-   * Retourne la classe CSS d'icône appropriée pour un type de contenu.
-   * Cette méthode est gardée pour appliquer des styles spécifiques si besoin.
-   */
   getIconClass(type: ContenuRecentDTO['typeContenu']): string {
     switch (type) {
       case 'CONTE': return 'item-icon-book';
@@ -82,14 +124,5 @@ export class Dashboard implements OnInit {
       case 'PHOTO': return 'item-icon-photo';
       default: return 'item-icon-default';
     }
-  }
-
-  /**
-   * Formate la date pour l'affichage (gardée si le pipe direct dans le HTML est jugé moins flexible).
-   */
-  formatDate(date: string | Date): string | null {
-    // Note: Utiliser le datePipe injecté (this.datePipe) est plus performant 
-    // que de créer une nouvelle instance à chaque appel.
-    return this.datePipe.transform(date, 'dd/MM/yyyy', undefined, 'fr-FR');
   }
 }

@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-proverb-details-component',
   standalone: true,
-   imports: [CommonModule],
+  imports: [CommonModule],
   templateUrl: './proverb-details-component.html',
   styleUrls: ['./proverb-details-component.css'],
 })
@@ -27,7 +27,6 @@ export class ProverbDetailsComponent implements OnInit {
     }
   }
 
-  /** Charger le détail du proverbe depuis le backend */
   loadProverbDetails(id: number): void {
     this.http.get<ContenuGlobalDto>(`${this.backendUrl}/${id}`).subscribe({
       next: (data) => {
@@ -38,7 +37,12 @@ export class ProverbDetailsComponent implements OnInit {
     });
   }
 
-  /** Retour arrière */
+  /** Construction de l’URL correcte de l’image */
+  getImageUrl(proverb: ContenuGlobalDto): string {
+    if (!proverb.urlPhoto) return 'assets/default-bg.jpg';
+    return `http://localhost:8080${proverb.urlPhoto.startsWith('/') ? '' : '/'}${proverb.urlPhoto}`;
+  }
+
   goBack(): void {
     history.back();
   }
