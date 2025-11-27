@@ -6,12 +6,12 @@
         <input type="text"
                placeholder="Recherche par titre, description ou auteur..."
                [(ngModel)]="searchTerm"
-               (ngModelChange)="applyFilters()" />
+               (ngModelChange)="applyLocalFilters()" />
       </div>
 
       <div class="admin-profile-section">
         <i class="material-icons profile-icon">person</i>
-                <span class="admin-text">{{ userFullName }}</span>
+        <span class="admin-text">{{ userFullName }}</span>
       </div>
     </div>
   </header>
@@ -19,7 +19,7 @@
   <h1 class="page-title">Contenus artisanal</h1>
 
   <section class="filters-card">
-    <select [(ngModel)]="selectedFamilleId" (ngModelChange)="applyFilters()">
+    <select [(ngModel)]="selectedFamilleId" (ngModelChange)="loadContent()">
       <option [ngValue]="0">Toutes les familles</option>
       <option *ngFor="let famille of familles" [ngValue]="famille.id">{{ famille.nom }}</option>
     </select>
@@ -40,7 +40,7 @@
 
         <img [src]="getPhotoUrl(item)" alt="Artisanat photo" />
 
-                <div class="card-action-buttons">
+        <div class="card-action-buttons">
           <button class="icon-btn edit-circle" (click)="startEdit(item, $event)" title="Modifier">
             <span class="material-icons">edit</span>
           </button>
@@ -64,7 +64,7 @@
     </div>
   </section>
 
-    <div class="modal-backdrop" *ngIf="selectedPhoto" (click)="closeModal()">
+  <div class="modal-backdrop" *ngIf="selectedPhoto" (click)="closeModal()">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <span class="material-icons close-icon" (click)="closeModal()">close</span>
 
@@ -73,7 +73,7 @@
       <div class="tags">
         <div class="tag green">
           <span class="material-icons">image</span>
-          <span>{{ selectedPhoto.nomCategorie }}</span>
+          <span>{{ selectedPhoto.nomCategorie || 'Artisanat' }}</span>
         </div>
         <div class="tag gold">{{ selectedPhoto.regionFamille || selectedPhoto.region || 'N/A' }}</div>
       </div>
@@ -90,7 +90,7 @@
         <button class="btn delete-btn" (click)="deleteFromModal(selectedPhoto.id)">
           <span class="material-icons">delete</span> Supprimer
         </button>
-        </div>
+      </div>
 
       <div class="footer-info">
         <span>Auteur : {{ selectedPhoto.nomCreateur }} {{ selectedPhoto.prenomCreateur }}</span>
@@ -99,36 +99,36 @@
     </div>
   </div>
 
-   <div class="modal-backdrop" *ngIf="showEditModal" (click)="cancelEdit()">
-  <div class="modal-card form-card" (click)="$event.stopPropagation()">
-    <h3 class="modal-title">Modifier l'artisanat</h3>
+  <div class="modal-backdrop" *ngIf="showEditModal" (click)="cancelEdit()">
+    <div class="modal-card form-card" (click)="$event.stopPropagation()">
+      <h3 class="modal-title">Modifier l'artisanat</h3>
 
-    <form (ngSubmit)="submitEdit()">
-      <label class="field-label">Titre</label>
-      <input type="text" [(ngModel)]="editModel.titre" name="titre" required />
+      <form (ngSubmit)="submitEdit()">
+        <label class="field-label">Titre</label>
+        <input type="text" [(ngModel)]="editModel.titre" name="titre" required />
 
-      <label class="field-label">Description</label>
-      <textarea rows="4" [(ngModel)]="editModel.description" name="description"></textarea>
+        <label class="field-label">Description</label>
+        <textarea rows="4" [(ngModel)]="editModel.description" name="description"></textarea>
 
-      <label class="field-label">Lieu</label>
-      <input type="text" [(ngModel)]="editModel.lieu" name="lieu" />
+        <label class="field-label">Lieu</label>
+        <input type="text" [(ngModel)]="editModel.lieu" name="lieu" />
 
-      <label class="field-label">Région</label>
-      <input type="text" [(ngModel)]="editModel.region" name="region" />
+        <label class="field-label">Région</label>
+        <input type="text" [(ngModel)]="editModel.region" name="region" />
 
-      <label class="field-label">Nouvelle photo (optionnel)</label>
-      <input type="file" (change)="onPhotoSelected($event)" accept="image/*" />
+        <label class="field-label">Nouvelle photo (optionnel)</label>
+        <input type="file" (change)="onPhotoSelected($event)" accept="image/*" />
 
-      <label class="field-label">Nouvelle vidéo (optionnel)</label>
-      <input type="file" (change)="onVideoSelected($event)" accept="video/*" />
+        <label class="field-label">Nouvelle vidéo (optionnel)</label>
+        <input type="file" (change)="onVideoSelected($event)" accept="video/*" />
 
-      <div *ngIf="uploadProgress > 0">Upload: {{ uploadProgress }}%</div>
+        <div *ngIf="uploadProgress > 0">Upload: {{ uploadProgress }}%</div>
 
-      <div class="edit-form-actions">
-        <button type="submit" class="btn edit-btn">Enregistrer</button>
-        <button type="button" class="btn cancel-btn" (click)="cancelEdit()">Annuler</button>
-      </div>
-    </form>
+        <div class="edit-form-actions">
+          <button type="submit" class="btn edit-btn">Enregistrer</button>
+          <button type="button" class="btn cancel-btn" (click)="cancelEdit()">Annuler</button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 </div>

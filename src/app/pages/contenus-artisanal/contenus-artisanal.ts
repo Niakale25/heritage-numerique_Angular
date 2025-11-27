@@ -5,10 +5,11 @@ import { HttpClient, HttpEventType } from '@angular/common/http';
 import { ContenuGlobalDto } from '../conte/contenu-global.dto';
 import { FamilleSuperAdminDTO } from '../../interfaces/famille-super-admin-dto.interface';
 import { Auth } from '../../services/auth';
-// ⭐️ IMPORT du service Auth
+import { ArtisanatDTO } from '../../interfaces/artisanat-dto';
 
-const DASHBOARD_API = 'http://localhost:8080/api/superadmin/dashboard'; // pour les GET existants
-const ARTISANAT_API_BASE = 'http://localhost:8080/api/superadmin/contenus-publics/artisanat'; // PUT / DELETE
+const DASHBOARD_API = 'http://localhost:8080/api/superadmin/dashboard';
+const ARTISANAT_API_BASE = 'http://localhost:8080/api/superadmin/contenus-publics/artisanat';
+const API_RECHERCHE_FAMILLE = 'http://localhost:8080/api/artisanats'; // ⭐ Nouvelle API
 
 @Component({
   selector: 'app-contenus-artisanal',
@@ -21,69 +22,103 @@ export class ContenusArtisanal implements OnInit {
 
   backendOrigin = 'http://localhost:8080';
 
-  allPhotos: ContenuGlobalDto[] = [];
-  photos: ContenuGlobalDto[] = [];
+  allPhotos: any[] = []; // On utilise 'any' pour accepter les deux formats DTO temporairement
+  photos: any[] = [];
   familles: FamilleSuperAdminDTO[] = [];
 
   searchTerm = '';
   selectedFamilleId = 0;
 
-  selectedPhoto: ContenuGlobalDto | null = null;
+  selectedPhoto: any | null = null;
   isLoading = true;
   errorMessage: string | null = null;
   
-  // ⭐️ PROPRIÉTÉ pour le nom de l'utilisateur (valeur par défaut)
   userFullName: string = 'Admin'; 
 
   // édition
   showEditModal = false;
-  editModel: any = {};             
+  editModel: any = {};              
   editPhotoFile?: File;
   editVideoFile?: File;
   uploadProgress = 0;
 
-  // ⭐️ INJECTION du service Auth dans le constructeur
   constructor(private http: HttpClient, private authService: Auth) {}
 
   ngOnInit(): void {
-    // ⭐️ LOGIQUE DE RÉCUPÉRATION DU NOM
     const name = this.authService.getUserFullName();
     if (name) {
       this.userFullName = name;
     }
 
-    this.loadArtisanats();
     this.loadFamilles();
+    this.loadContent(); // ⭐ Appel initial unifié
   }
 
   /* ---------- Helpers ---------- */
 
-  getPhotoUrl(item: ContenuGlobalDto | null): string {
+  getPhotoUrl(item: any | null): string {
     if (!item) return 'assets/placeholder.jpg';
-    let path = (item as any).urlPhoto || (item as any).thumbnailUrl;
+    
+    // ⭐ Gestion intelligente : soit urlPhoto (ancien), soit urlPhotos[0] (nouveau)
+    let path = item.urlPhoto || item.thumbnailUrl;
+    if (!path && item.urlPhotos && item.urlPhotos.length > 0) {
+        path = item.urlPhotos[0];
+    }
+
     if (!path) return 'assets/placeholder.jpg';
     if (path.startsWith('/')) path = path.substring(1);
     if (!path.includes('uploads/')) path = `uploads/images/${path}`;
     return `${this.backendOrigin}/${path}`;
   }
 
-  /* ---------- Chargement ---------- */
+  /* ---------- Chargement Intelligent ---------- */
 
-  loadArtisanats() {
+  // ⭐ Cette fonction décide quelle API appeler
+  loadContent() {
     this.isLoading = true;
     this.errorMessage = null;
-    this.http.get<ContenuGlobalDto[]>(`${DASHBOARD_API}/artisanats`).subscribe({
-      next: data => {
-        this.allPhotos = data || [];
-        this.applyFilters();
-        this.isLoading = false;
-      },
-      error: err => {
-        console.error('Erreur chargement artisanats', err);
-        this.errorMessage = 'Erreur lors du chargement des artisanats.';
-        this.isLoading = false;
-      }
-    });
+    this.photos = []; 
+    this.allPhotos = [];
+
+    if (this.selectedFamilleId === 0) {
+        // CAS 1 : TOUTES LES FAMILLES (Ancienne API Dashboard)
+        this.http.get<ContenuGlobalDto[]>(`${DASHBOARD_API}/artisanats`).subscribe({
+            next: data => {
+                this.allPhotos = data || [];
+                this.applyLocalFilters(); // Filtre texte uniquement
+                this.isLoading = false;
+            },
+            error: err => this.handleError(err)
+        });
+    } else {
+        // CAS 2 : PAR FAMILLE (Nouvelle API ArtisanatController)
+        const url = `${API_RECHERCHE_FAMILLE}/famille/${this.selectedFamilleId}`;
+        this.http.get<ArtisanatDTO[]>(url).subscribe({
+            next: data => {
+                // ⭐ MAPPING : On transforme les données pour qu'elles ressemblent au format attendu par le HTML
+                const mappedData = (data || []).map(dto => ({
+                    ...dto,
+                    // Adaptation des champs
+                    nomCreateur: dto.nomAuteur,
+                    prenomCreateur: dto.prenomAuteur,
+                    urlPhoto: (dto.urlPhotos && dto.urlPhotos.length > 0) ? dto.urlPhotos[0] : null,
+                    dateCreation: dto.dateCreation,
+                    // On garde les autres champs (titre, description, id...)
+                }));
+
+                this.allPhotos = mappedData;
+                this.applyLocalFilters();
+                this.isLoading = false;
+            },
+            error: err => this.handleError(err)
+        });
+    }
+  }
+
+  handleError(err: any) {
+    console.error('Erreur chargement', err);
+    this.errorMessage = 'Erreur lors du chargement des données.';
+    this.isLoading = false;
   }
 
   loadFamilles() {
@@ -93,9 +128,10 @@ export class ContenusArtisanal implements OnInit {
     });
   }
 
-  /* ---------- Filtre / Recherche ---------- */
+  /* ---------- Filtre Texte Local ---------- */
 
-  applyFilters() {
+  //  Appelé quand on tape dans la barre de recherche ou après chargement
+  applyLocalFilters() {
     let list = [...this.allPhotos];
     const term = (this.searchTerm || '').toLowerCase().trim();
 
@@ -107,20 +143,14 @@ export class ContenusArtisanal implements OnInit {
         (item.prenomCreateur || '').toLowerCase().includes(term)
       );
     }
-
-    if (this.selectedFamilleId !== 0) {
-    const famille = this.familles.find(f => f.id === this.selectedFamilleId);
-    if (famille) {
-      list = list.filter(item => (item.nomFamille || '').toLowerCase() === famille.nomFamille.toLowerCase());
-    }
+    
+    // Note : Le filtre par famille est déjà fait par le serveur dans loadContent()
+    this.photos = list;
   }
-
-  this.photos = list;
-}
 
   /* ---------- Modale affichage ---------- */
 
-  openModal(photo: ContenuGlobalDto) {
+  openModal(photo: any) {
     this.selectedPhoto = photo;
   }
 
@@ -136,7 +166,6 @@ export class ContenusArtisanal implements OnInit {
   }
 
   deleteFromModal(id: number) {
-    // appelé par bouton dans la modale
     this.confirmAndDelete(id);
   }
 
@@ -147,7 +176,7 @@ export class ContenusArtisanal implements OnInit {
       next: () => {
         alert('Artisanat supprimé avec succès.');
         this.closeModal();
-        this.loadArtisanats();
+        this.loadContent(); // Recharger la liste actuelle
       },
       error: err => {
         console.error('Erreur suppression', err);
@@ -158,17 +187,15 @@ export class ContenusArtisanal implements OnInit {
 
   /* ---------- Edition ---------- */
 
-  // Ouvre le formulaire d'édition (depuis la carte ou la modale)
-  startEdit(item: ContenuGlobalDto, event?: Event) {
+  startEdit(item: any, event?: Event) {
     if (event) event.stopPropagation();
     this.showEditModal = true;
-    this.editModel = { ...item }; // copie superficielle
+    this.editModel = { ...item };
     this.editPhotoFile = undefined;
     this.editVideoFile = undefined;
     this.uploadProgress = 0;
   }
 
-  // Fermeture du formulaire d'édition
   cancelEdit() {
     this.showEditModal = false;
     this.editModel = {};
@@ -200,17 +227,14 @@ export class ContenusArtisanal implements OnInit {
     const id = (this.editModel.id as number);
     const form = new FormData();
 
-    // Champs textes
     if (this.editModel.titre !== undefined) form.append('titre', this.editModel.titre || '');
     if (this.editModel.description !== undefined) form.append('description', this.editModel.description || '');
     if (this.editModel.lieu !== undefined) form.append('lieu', this.editModel.lieu || '');
     if (this.editModel.region !== undefined) form.append('region', this.editModel.region || '');
 
-    // Fichiers (optionnels)
     if (this.editPhotoFile) form.append('photoArtisanat', this.editPhotoFile);
     if (this.editVideoFile) form.append('videoArtisanat', this.editVideoFile);
 
-    // Requête PUT avec suivi progress (optionnel)
     this.http.put(`${ARTISANAT_API_BASE}/${id}`, form, {
       reportProgress: true,
       observe: 'events'
@@ -222,7 +246,7 @@ export class ContenusArtisanal implements OnInit {
           alert('Artisanat modifié avec succès.');
           this.cancelEdit();
           this.closeModal();
-          this.loadArtisanats();
+          this.loadContent(); // Recharger la liste
         }
       },
       error: err => {
