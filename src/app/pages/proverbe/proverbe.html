@@ -1,148 +1,153 @@
 <div class="main-container">
 
- <!-- Barre du haut -->
-<header class="header-contes">
- <div class="header-content-container">
- <div class="search-bar">
- <i class="material-icons">search</i>
- <!-- Ajoutez ngModel ici si vous voulez utiliser la recherche -->
- <input type="text" placeholder="Recherche...">
- </div>
- <div class="admin-profile-section">
- <i class="material-icons profile-icon">person</i>
- <!-- ⭐️ CORRECTION : Affichage dynamique du nom via le signal -->
- <span class="admin-text">{{ adminFullName() }}</span>
- </div>
- </div>
-</header>
+    <header class="header-contes">
+        <div class="header-content-container">
+            <div class="search-bar">
+                <i class="material-icons">search</i>
+                <input type="text" placeholder="Recherche...">
+            </div>
+            <div class="admin-profile-section">
+                <i class="material-icons profile-icon">person</i>
+                <span class="admin-text">{{ adminFullName() }}</span>
+            </div>
+        </div>
+    </header>
 
-<!-- Titre principal -->
-<section class="title-section">
- <div>
- <h1 class="title">Collection de Proverbes</h1>
- <p class="subtitle">Cliquez sur un proverbe pour découvrir sa sagesse</p>
- </div>
+    <section class="title-section">
+        <div>
+            <h1 class="title">Collection de Proverbes</h1>
+            <p class="subtitle">Cliquez sur un proverbe pour découvrir sa sagesse</p>
+        </div>
 
- <div class="add-button-container">
- <button (click)="addProverb()" class="btn-add">
- <span class="material-icons">add</span>
- <span>Ajouter</span>
- </button>
- </div>
-</section>
+        <div class="add-button-container">
+            <button (click)="addProverb()" class="btn-add">
+                <span class="material-icons">add</span>
+                <span>Ajouter</span>
+            </button>
+        </div>
+    </section>
 
-<!-- Grille des proverbes -->
-<section class="grid">
- @for (proverb of Proverbs(); track proverb.id) {
-<div class="card" (click)="viewProverb(proverb)">
- <!-- Utilisation de getPhotoUrl() pour l'image. L'URL corrigée est fournie par le TS. -->
- <div class="card-img"
- [ngStyle]="{
- 'background-image': 'url(' + getPhotoUrl(proverb) + ')'
- }">
- </div>
+    <section class="grid">
+        @for (proverb of Proverbs(); track proverb.id) {
+        <div class="card" (click)="viewProverb(proverb)">
+            <div class="card-img"
+                [ngStyle]="{
+                'background-image': 'url(' + getPhotoUrl(proverb) + ')'
+                }">
+            </div>
 
- <div class="card-content">
- <p class="card-text">"{{ proverb.titre }}"</p>
- <div class="card-origin">
- <div class="line"></div>
- <span class="origin-text">{{ proverb.origineProverbe || 'Origine inconnue' }}</span>
- <div class="line"></div>
- </div>
+            <div class="card-content">
+                <p class="card-text">"{{ proverb.texteProverbe }}"</p>
+                <div class="card-origin">
+                    <div class="line"></div>
+                    <span class="origin-text">{{ proverb.origineProverbe || 'Origine inconnue' }}</span>
+                    <div class="line"></div>
+                </div>
 
- <div class="card-actions">
- <button (click)="$event.stopPropagation(); editProverb(proverb)" class="btn-edit">
- <i class="material-icons">edit</i><span>Modifier</span>
- </button>
- <button (click)="$event.stopPropagation(); deleteProverb(proverb.id)" class="btn-delete">
- <i class="material-icons">delete</i><span>Supprimer</span>
- </button>
- </div>
- </div>
- </div>
- }
- @empty {
- <p class="text-gray-500">Aucun proverbe trouvé.</p>
- }
-</section>
+                <div class="card-actions">
+                    <button (click)="$event.stopPropagation(); editProverb(proverb)" class="btn-edit">
+                        <i class="material-icons">edit</i><span>Modifier</span>
+                    </button>
+                    <button (click)="$event.stopPropagation(); deleteProverb(proverb.id)" class="btn-delete">
+                        <i class="material-icons">delete</i><span>Supprimer</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+        @empty {
+        <p class="text-gray-500">Aucun proverbe trouvé.</p>
+        }
+    </section>
 
-<!-- Modal d’ajout (Création) -->
-@if (showAddModal()) {
- <div class="modal-overlay" (click)="closeAddModal()">
- <div class="modal-content" (click)="$event.stopPropagation()">
- <div class="modal-header">
- <h2>Ajouter un Nouveau Proverbe</h2>
- <button (click)="closeAddModal()" class="btn-close-modal">
- <i class="material-icons">close</i>
- </button>
- </div>
+    @if (showAddModal()) {
+    <div class="modal-overlay" (click)="closeAddModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Ajouter un Nouveau Proverbe</h2>
+                <button (click)="closeAddModal()" class="btn-close-modal">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
 
- <form (ngSubmit)="submitNewProverb($event)" class="proverb-form" enctype="multipart/form-data">
- <div class="form-group">
- <label for="titre">Titre du Proverbe :</label>
- <input id="titre" [(ngModel)]="newProverbData.titre" name="titre" required />
- </div>
+            <form (ngSubmit)="submitNewProverb($event)" class="proverb-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="titre">Titre du Proverbe :</label>
+                    <input id="titre" [(ngModel)]="newProverbData.titre" name="titre" required />
+                </div>
 
- <div class="form-group">
- <label for="origineProverbe">Origine :</label>
- <input id="origineProverbe" [(ngModel)]="newProverbData.origineProverbe" name="origineProverbe" required />
- </div>
+                <div class="form-group">
+                    <label for="texteProverbe">Texte du Proverbe :</label>
+                    <textarea id="texteProverbe" [(ngModel)]="newProverbData.texteProverbe" name="texteProverbe" required></textarea>
+                </div>
 
- <div class="form-group">
- <label for="significationProverbe">Signification :</label>
- <textarea id="significationProverbe" [(ngModel)]="newProverbData.significationProverbe" name="significationProverbe" required></textarea>
-</div>
+                <div class="form-group">
+                    <label for="origineProverbe">Origine :</label>
+                    <input id="origineProverbe" [(ngModel)]="newProverbData.origineProverbe" name="origineProverbe" required />
+                </div>
 
- <div class="form-group">
- <label for="photoProverbe">Photo :</label>
- <input type="file" id="photoProverbe" (change)="onPhotoSelected($event)" />
- </div>
+                <div class="form-group">
+                    <label for="significationProverbe">Signification :</label>
+                    <textarea id="significationProverbe" [(ngModel)]="newProverbData.significationProverbe" name="significationProverbe" required></textarea>
+                </div>
 
- <div class="form-actions">
- <button type="button" (click)="closeAddModal()" class="btn-secondary">Annuler</button>
- <button type="submit" class="btn-primary">Enregistrer</button>
- </div>
- </form></div>
- </div>
-}
+                <div class="form-group">
+                    <label for="photoProverbe">Photo :</label>
+                    <input type="file" id="photoProverbe" (change)="onPhotoSelected($event)" />
+                </div>
 
-<!-- Modal d’édition (Modification) -->
-@if (showEditModal()) {
- <div class="modal-overlay" (click)="closeEditModal()">
- <div class="modal-content" (click)="$event.stopPropagation()">
- <div class="modal-header">
-<h2>Modifier le Proverbe</h2>
- <button (click)="closeEditModal()" class="btn-close-modal">
- <i class="material-icons">close</i>
- </button> </div>
+                <div class="form-actions">
+                    <button type="button" (click)="closeAddModal()" class="btn-secondary">Annuler</button>
+                    <button type="submit" class="btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
 
- <form (ngSubmit)="submitEditProverb($event)" class="proverb-form" enctype="multipart/form-data">
- <div class="form-group">
- <label for="editTitre">Titre du Proverbe :</label>
- <input id="editTitre" [(ngModel)]="editProverbData.titre" name="editTitre" required />
- </div>
+    @if (showEditModal()) {
+    <div class="modal-overlay" (click)="closeEditModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Modifier le Proverbe</h2>
+                <button (click)="closeEditModal()" class="btn-close-modal">
+                    <i class="material-icons">close</i>
+                </button>
+            </div>
 
- <div class="form-group">
- <label for="editOrigineProverbe">Origine :</label>
- <input id="editOrigineProverbe" [(ngModel)]="editProverbData.origineProverbe" name="editOrigineProverbe" required />
- </div>
-  <div class="form-group">
- <label for="editSignificationProverbe">Signification :</label>
- <textarea id="editSignificationProverbe" [(ngModel)]="editProverbData.significationProverbe" name="editSignificationProverbe" required></textarea>
- </div>
+            <form (ngSubmit)="submitEditProverb($event)" class="proverb-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="editTitre">Titre du Proverbe :</label>
+                    <input id="editTitre" [(ngModel)]="editProverbData.titre" name="editTitre" required />
+                </div>
 
- <div class="form-group">
- <label for="editPhotoProverbe">Photo (Laisser vide pour garder l'ancienne) :</label>
- <input type="file" id="editPhotoProverbe" (change)="onEditPhotoSelected($event)" />
- </div>
+                <div class="form-group">
+                    <label for="editTextProverbe">Texte du Proverbe :</label>
+                    <textarea id="editTextProverbe" [(ngModel)]="editProverbData.texteProverbe" name="editTextProverbe" required></textarea>
+                </div>
 
- <div class="form-actions">
- <button type="button" (click)="closeEditModal()" class="btn-secondary">Annuler</button>
- <button type="submit" class="btn-primary">Sauvegarder</button>
-</div>
- </form>
- </div>
- </div>
-}
+                <div class="form-group">
+                    <label for="editOrigineProverbe">Origine :</label>
+                    <input id="editOrigineProverbe" [(ngModel)]="editProverbData.origineProverbe" name="editOrigineProverbe" required />
+                </div>
+                <div class="form-group">
+                    <label for="editSignificationProverbe">Signification :</label>
+                    <textarea id="editSignificationProverbe" [(ngModel)]="editProverbData.significationProverbe" name="editSignificationProverbe"
+                        required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="editPhotoProverbe">Photo (Laisser vide pour garder l'ancienne) :</label>
+                    <input type="file" id="editPhotoProverbe" (change)="onEditPhotoSelected($event)" />
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" (click)="closeEditModal()" class="btn-secondary">Annuler</button>
+                    <button type="submit" class="btn-primary">Sauvegarder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
 
 </div>

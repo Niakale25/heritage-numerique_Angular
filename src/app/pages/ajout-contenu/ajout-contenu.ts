@@ -25,35 +25,37 @@ export class AjoutContenu {
 
   constructor(private fb: FormBuilder) {
     this.contenuForm = this.fb.group({
+      // --- CHAMPS COMMUNS ---
       type: ['', Validators.required],
-      langue: ['', Validators.required],
       region: ['', Validators.required],
+      lieu: ['', Validators.required], // ✅ AJOUTÉ (Lieu général)
 
-      // Conte
-      title: [''],
+      // ✅ CHAMP PARTAGÉ (Pour Conte et Proverbe)
+      title: [''], 
+
+      // --- CONTE (Champs spécifiques) ---
       author: [''],
       content: [''],
-      dateAdded: [''],
       thumbnailUrl: [null],
-      fichierConte: [null], // 🆕 fichier (PDF/audio)
+      fichierConte: [null],
 
-      // Proverbe
-      text: [''],
+      // --- PROVERBE (Champs spécifiques) ---
+      // Note: 'title' est déjà déclaré plus haut, on ne le remet pas ici.
+      text: [''], // Le texte même du proverbe
       origin: [''],
       signification: [''],
       imageUrl: [null],
 
-      // Devinette
+      // --- DEVINETTE (Champs spécifiques) ---
       question: [''],
       answer: [''],
 
-      // Artisanat
-      titre: [''],
+      // --- ARTISANAT (Champs spécifiques) ---
+      titre: [''], // Artisanat garde son champ 'titre' distinct pour ne pas casser la logique existante
       description: [''],
       auteur: [''],
       image: [null],
-       video: [null],
-      date: ['']
+      video: [null]
     });
   }
 
@@ -83,7 +85,7 @@ export class AjoutContenu {
   // 🚀 Soumission du formulaire
   onSubmit(): void {
     if (this.contenuForm.invalid) {
-      this.message.set("❌ Veuillez remplir tous les champs obligatoires.");
+      this.message.set("❌ Veuillez remplir tous les champs obligatoires (Type, Région, Lieu).");
       return;
     }
 
@@ -97,33 +99,34 @@ export class AjoutContenu {
     const formValue = this.contenuForm.value;
     const formData = new FormData();
 
-    // ✅ Champs communs
+    // ✅ Champs communs envoyés pour tous les types
     formData.append('region', formValue.region || '');
+    formData.append('lieu', formValue.lieu || '');
 
-    // --- 🎭 MAPPING CORRECT avec les noms attendus par ton backend ---
+    // --- 🎭 MAPPING CORRECT avec les noms attendus par le backend ---
     switch (type) {
       // 🟠 CONTE
       case 'conte':
-        formData.append('titre', formValue.title || '');
+        formData.append('titre', formValue.title || ''); // Utilise le champ 'title' partagé
         formData.append('description', formValue.content || '');
         formData.append('texteConte', formValue.content || '');
-        formData.append('lieu', formValue.author || ''); 
+        formData.append('auteur', formValue.author || ''); 
+        
         if (this.selectedFiles['thumbnailUrl']) {
           formData.append('photoConte', this.selectedFiles['thumbnailUrl']!, this.selectedFiles['thumbnailUrl']!.name);
         }
-         if (this.selectedFiles['fichierConte']) { // 🆕
-    formData.append('fichierConte', this.selectedFiles['fichierConte']!, this.selectedFiles['fichierConte']!.name);
-  }
+        if (this.selectedFiles['fichierConte']) { 
+            formData.append('fichierConte', this.selectedFiles['fichierConte']!, this.selectedFiles['fichierConte']!.name);
+        }
         break;
 
       // 🟣 PROVERBE
       case 'proverbe':
-        formData.append('titre', formValue.text || '');
-        formData.append('texteProverbe', formValue.text || '');
+        formData.append('titre', formValue.title || ''); // Utilise le champ 'title' partagé
+        formData.append('texteProverbe', formValue.text || ''); // Utilise le champ 'text'
         formData.append('origineProverbe', formValue.origin || '');
         formData.append('significationProverbe', formValue.signification || '');
-        formData.append('lieu', formValue.region || '');
-        formData.append('region', formValue.region || '');
+        
         if (this.selectedFiles['imageUrl']) {
           formData.append('photoProverbe', this.selectedFiles['imageUrl']!, this.selectedFiles['imageUrl']!.name);
         }
@@ -134,22 +137,20 @@ export class AjoutContenu {
         formData.append('titre', formValue.question || '');
         formData.append('texteDevinette', formValue.question || '');
         formData.append('reponseDevinette', formValue.answer || '');
-        formData.append('lieu', formValue.region || '');
-        formData.append('region', formValue.region || '');
         break;
 
       // 🟡 ARTISANAT
       case 'artisanat':
-        formData.append('titre', formValue.titre || '');
+        formData.append('titre', formValue.titre || ''); // Utilise le champ 'titre' spécifique artisanat
         formData.append('description', formValue.description || '');
-        formData.append('lieu', formValue.region || '');
-        formData.append('region', formValue.region || '');
+        formData.append('auteur', formValue.auteur || '');
+        
         if (this.selectedFiles['image']) {
           formData.append('photoArtisanat', this.selectedFiles['image']!, this.selectedFiles['image']!.name);
         }
-        if (this.selectedFiles['video']) { // 🆕
-    formData.append('videoArtisanat', this.selectedFiles['video']!, this.selectedFiles['video']!.name);
-  }
+        if (this.selectedFiles['video']) { 
+          formData.append('videoArtisanat', this.selectedFiles['video']!, this.selectedFiles['video']!.name);
+        }
         break;
 
       default:

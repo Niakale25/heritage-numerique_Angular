@@ -1,23 +1,20 @@
 <div class="page-container" *ngIf="proverbData() as proverb">
-  <!-- Image de fond -->
   <div
     class="background"
     [style.background-image]="'url(' + getImageUrl(proverb) + ')'">
   </div>
 
-  <!-- Overlay sombre -->
   <div class="overlay"></div>
 
-  <!-- Carte du proverbe -->
   <div class="card">
-    <h1 class="proverb-text">“{{ proverb.titre }}”</h1>
+    <h1 class="proverb-text">“{{ proverb.texteProverbe }}”</h1>
 
     <div class="separator">
       <div class="line"></div>
       <span class="origin">{{ proverb.origineProverbe || 'Origine inconnue' }}</span>
       <div class="line"></div>
     </div>
-
+    
     <h2 class="signification-title">Signification</h2>
     <p class="signification-text">{{ proverb.significationProverbe }}</p>
 

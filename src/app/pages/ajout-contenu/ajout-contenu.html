@@ -3,14 +3,14 @@
   <h2 class="main-subtitle">Sélectionnez une catégorie et remplissez les champs correspondants</h2>
 
   <div class="form-card">
-        <div *ngIf="message()" class="success-message">
+    <div *ngIf="message()" class="success-message">
       <i class="fas fa-check-circle"></i>
       <strong>{{ message() }}</strong>
     </div>
 
     <form [formGroup]="contenuForm" (ngSubmit)="onSubmit()">
       
-              <div class="form-group">
+      <div class="form-group">
         <label for="type">Type de contenu :</label>
         <select id="type" formControlName="type" (change)="onTypeChange($event)">
           <option value="">-- Choisir une catégorie --</option>
@@ -21,22 +21,18 @@
         </select>
       </div>
 
-            <div class="form-group">
-        <label for="langue">Langue :</label>
-        <select id="langue" formControlName="langue">
-          <option value="">-- Choisir une langue --</option>
-          <option value="bambara">Bambara</option>
-          <option value="francais">Français</option>
-          <option value="anglais">Anglais</option>
-        </select>
-      </div>
-
       <div class="form-group">
         <label>Région :</label>
         <input type="text" formControlName="region" placeholder="Ex : Ségou">
       </div>
 
-            <div *ngIf="typeSelectionne() === 'conte'">
+      <div class="form-group">
+        <label>Lieu / Village :</label>
+        <input type="text" formControlName="lieu" placeholder="Ex : Niono">
+      </div>
+
+
+      <div *ngIf="typeSelectionne() === 'conte'">
         <h3 class="translation-title"><i class="fas fa-book"></i> Conte</h3>
 
         <div class="form-group">
@@ -44,33 +40,43 @@
           <input type="text" formControlName="title" placeholder="Titre du conte">
         </div>
 
-
+        <div class="form-group">
+            <label>Auteur / Conteur :</label>
+            <input type="text" formControlName="author" placeholder="Nom du conteur">
+        </div>
 
         <div class="form-group">
           <label>Contenu :</label>
           <textarea formControlName="content" placeholder="Racontez le conte ici..."></textarea>
         </div>
 
-        <label for="fichierConte">Fichier du conte (PDF, audio...) :</label>
-  <input type="file" id="fichierConte" (change)="onFileSelected($event, 'fichierConte')" />
-  <p *ngIf="getFileName('fichierConte')">📎 {{ getFileName('fichierConte') }}</p>
+        <div class="form-group">
+            <label for="fichierConte">Fichier du conte (PDF, audio...) :</label>
+            <input type="file" id="fichierConte" (change)="onFileSelected($event, 'fichierConte')" />
+            <p *ngIf="getFileName('fichierConte')">📎 {{ getFileName('fichierConte') }}</p>
+        </div>
 
-
-                <div class="form-group">
+        <div class="form-group">
           <label for="conteImage">Image associée :</label>
           <input 
-                type="file" 
-                id="conteImage" 
-                (change)="onFileSelected($event, 'thumbnailUrl')" 
-                accept="image/*" 
-                class="file-input-styled"
-            >
-            <span class="file-info">{{ getFileName('thumbnailUrl') || 'Aucun fichier choisi' }}</span>
+              type="file" 
+              id="conteImage" 
+              (change)="onFileSelected($event, 'thumbnailUrl')" 
+              accept="image/*" 
+              class="file-input-styled"
+          >
+          <span class="file-info">{{ getFileName('thumbnailUrl') || 'Aucun fichier choisi' }}</span>
         </div>
       </div>
 
-            <div *ngIf="typeSelectionne() === 'proverbe'">
+
+      <div *ngIf="typeSelectionne() === 'proverbe'">
         <h3 class="translation-title"><i class="fas fa-feather"></i> Proverbe</h3>
+
+        <div class="form-group">
+            <label>Titre du proverbe :</label>
+            <input type="text" formControlName="title" placeholder="Titre court (ex: La sagesse)">
+        </div>
 
         <div class="form-group">
           <label>Texte du proverbe :</label>
@@ -87,20 +93,21 @@
           <textarea formControlName="signification" placeholder="Explication du proverbe"></textarea>
         </div>
 
-                <div class="form-group">
+        <div class="form-group">
           <label for="proverbeImage">Image associée :</label>
           <input 
-                type="file" 
-                id="proverbeImage" 
-                (change)="onFileSelected($event, 'imageUrl')" 
-                accept="image/*" 
-                class="file-input-styled"
-            >
-            <span class="file-info">{{ getFileName('imageUrl') || 'Aucun fichier choisi' }}</span>
+              type="file" 
+              id="proverbeImage" 
+              (change)="onFileSelected($event, 'imageUrl')" 
+              accept="image/*" 
+              class="file-input-styled"
+          >
+          <span class="file-info">{{ getFileName('imageUrl') || 'Aucun fichier choisi' }}</span>
         </div>
       </div>
 
-            <div *ngIf="typeSelectionne() === 'devinette'">
+
+      <div *ngIf="typeSelectionne() === 'devinette'">
         <h3 class="translation-title"><i class="fas fa-lightbulb"></i> Devinette</h3>
 
         <div class="form-group">
@@ -114,7 +121,8 @@
         </div>
       </div>
 
-            <div *ngIf="typeSelectionne() === 'artisanat'">
+
+      <div *ngIf="typeSelectionne() === 'artisanat'">
         <h3 class="translation-title"><i class="fas fa-hammer"></i> Artisanat</h3>
 
         <div class="form-group">
@@ -133,31 +141,28 @@
         </div>
 
         <div class="form-group">
-          <label>Date :</label>
-          <input type="text" formControlName="date" placeholder="Ex : 2025-11-01">
+            <label for="video">Vidéo de l’artisanat :</label>
+            <input type="file" id="video" accept="video/*" (change)="onFileSelected($event, 'video')" />
+            <p *ngIf="getFileName('video')">🎥 {{ getFileName('video') }}</p>
         </div>
-
-        <label for="video">Vidéo de l’artisanat :</label>
-  <input type="file" id="video" accept="video/*" (change)="onFileSelected($event, 'video')" />
-  <p *ngIf="getFileName('video')">🎥 {{ getFileName('video') }}</p>
-
         
-                <div class="form-group">
+        <div class="form-group">
           <label for="artisanatImage">Image :</label>
           <input 
-                type="file" 
-                id="artisanatImage" 
-                (change)="onFileSelected($event, 'image')" 
-                accept="image/*" 
-                class="file-input-styled"
-            >
-            <span class="file-info">{{ getFileName('image') || 'Aucun fichier choisi' }}</span>
+              type="file" 
+              id="artisanatImage" 
+              (change)="onFileSelected($event, 'image')" 
+              accept="image/*" 
+              class="file-input-styled"
+          >
+          <span class="file-info">{{ getFileName('image') || 'Aucun fichier choisi' }}</span>
         </div>
       </div>
 
       <button type="submit" class="submit-button">
         <i class="fas fa-plus"></i> Ajouter
       </button>
+
     </form>
   </div>
 </div>
